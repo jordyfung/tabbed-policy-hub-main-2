@@ -7,8 +7,9 @@ import PoliciesContent from '@/components/pages/PoliciesContent';
 import TrainingContent from '@/components/pages/TrainingContent';
 import AssuranceContent from '@/components/pages/AssuranceContent';
 import NewsfeedContent from '@/components/pages/NewsfeedContent';
+import AnnouncementsContent from '@/components/pages/AnnouncementsContent';
 
-type Tab = 'dashboard' | 'newsfeed' | 'policies' | 'training' | 'assurance';
+type Tab = 'dashboard' | 'newsfeed' | 'policies' | 'training' | 'assurance' | 'announcements';
 
 const Index = () => {
   const { isAdmin } = useAuth();
@@ -26,7 +27,9 @@ const Index = () => {
       case 'training':
         return <TrainingContent activeSubTab={activeSubTab} />;
       case 'assurance':
-        return <AssuranceContent />;
+        return <AssuranceContent activeSubTab={activeSubTab} />;
+      case 'announcements':
+        return <AnnouncementsContent />;
       default:
         return <DashboardContent activeSubTab={activeSubTab} />;
     }

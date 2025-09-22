@@ -81,12 +81,15 @@ export const PermissionsProvider = ({ children }: PermissionsProviderProps) => {
   };
 
   const isSubTabEnabled = (tabId: string, subTabId: string): boolean => {
-    // Super admin can see everything
-    if (isSuperAdmin) return true;
+    const permission = permissions.find(p => p.tab_id === tabId && p.subtab_id === subTabId);
+    
+    // Super admin can see everything, but permissions page should reflect actual status
+    if (isSuperAdmin) {
+      return permission?.is_enabled ?? true;
+    }
     
     // Regular admins see based on permissions
     if (isAdmin) {
-      const permission = permissions.find(p => p.tab_id === tabId && p.subtab_id === subTabId);
       return permission?.is_enabled ?? true; // Default to enabled if not found
     }
     

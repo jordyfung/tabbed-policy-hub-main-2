@@ -52,14 +52,13 @@ All colors MUST be HSL.
     --critical-foreground: 0 0% 100%;
     
     /* Quality Standards Colors */
-    --governance: 260 60% 45%;
-    --clinical: 195 85% 50%;
-    --personal: 160 75% 40%;
-    --environment: 120 60% 35%;
-    --nutrition: 35 85% 55%;
-    --medication: 280 75% 45%;
-    --incidents: 15 85% 55%;
-    --workforce: 210 70% 50%;
+    --standard-1-person: 345 85% 60%;
+    --standard-2-organisation: 100 60% 45%;
+    --standard-3-care: 260 60% 55%;
+    --standard-4-environment: 220 70% 45%;
+    --standard-5-clinical: 180 70% 45%;
+    --standard-6-nutrition: 25 90% 60%;
+    --standard-7-community: 45 90% 55%;
 
     /* Navigation & Layout - Greyscale with accent colors for emphasis */
     --nav-background: 0 0% 100%;

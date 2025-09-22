@@ -444,6 +444,33 @@ export type Database = {
           },
         ]
       }
+      policy_feedback: {
+        Row: {
+          created_at: string
+          feedback: string | null
+          id: number
+          policy_name: string | null
+          status: string
+          submitted_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          feedback?: string | null
+          id?: number
+          policy_name?: string | null
+          status?: string
+          submitted_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          feedback?: string | null
+          id?: number
+          policy_name?: string | null
+          status?: string
+          submitted_by?: string | null
+        }
+        Relationships: []
+      }
       post_comments: {
         Row: {
           author_id: string

@@ -28,7 +28,7 @@ import {
   Rss
 } from 'lucide-react';
 
-type Tab = 'dashboard' | 'newsfeed' | 'policies' | 'training' | 'assurance';
+type Tab = 'dashboard' | 'newsfeed' | 'policies' | 'training' | 'assurance' | 'announcements';
 
 interface SubTab {
   id: string;
@@ -63,10 +63,9 @@ const tabConfig = {
     icon: Shield,
     subTabs: [
       { id: 'documents', label: 'Documents', icon: FileText, color: 'success' as const },
-      { id: 'ai-assistant', label: 'AI Assistant', icon: MessageSquare, color: 'info' as const },
-      { id: 'compliance', label: 'Compliance', icon: CheckCircle, color: 'coral' as const },
-      { id: 'updates', label: 'Updates', icon: ChevronRight, color: 'info' as const },
-      { id: 'archive', label: 'Archive', icon: ClipboardList, color: 'success' as const }
+      { id: 'feedback', label: 'Submit Feedback', icon: MessageSquare, color: 'coral' as const },
+      { id: 'view-feedback', label: 'View Feedback', icon: ClipboardList, color: 'success' as const },
+      { id: 'ai-assistant', label: 'AI Assistant', icon: Bot, color: 'info' as const }
     ]
   },
   training: {
@@ -74,7 +73,6 @@ const tabConfig = {
     icon: GraduationCap,
     subTabs: [
       { id: 'profile', label: 'Profile', icon: Users, color: 'coral' as const },
-      { id: 'overview', label: 'Overview', icon: BarChart3, color: 'success' as const },
       { id: 'courses', label: 'Courses', icon: BookOpen, color: 'info' as const },
       { id: 'management', label: 'Management', icon: Settings, color: 'coral' as const },
       { id: 'assignments', label: 'Assignments', icon: Target, color: 'info' as const }
@@ -84,11 +82,14 @@ const tabConfig = {
     label: 'Assurance',
     icon: CheckCircle,
     subTabs: [
-      { id: 'audits', label: 'Audits', icon: ClipboardList, color: 'coral' as const },
-      { id: 'assessments', label: 'Assessments', icon: CheckCircle, color: 'success' as const },
-      { id: 'findings', label: 'Findings', icon: FileText, color: 'info' as const },
-      { id: 'remediation', label: 'Remediation', icon: Settings, color: 'coral' as const }
+      { id: 'overview', label: 'Overview', icon: CheckCircle, color: 'success' as const },
+      { id: 'feedback', label: 'Feedback & Complaints', icon: MessageSquare, color: 'info' as const }
     ]
+  },
+  announcements: {
+    label: 'Announcements',
+    icon: Rss,
+    subTabs: []
   }
 };
 
@@ -112,6 +113,32 @@ export default function MainLayout({
   const [internalActiveSubTab, setInternalActiveSubTab] = useState('overview');
   
   const currentActiveSubTab = activeSubTab || internalActiveSubTab;
+
+  const visibleSubTabs = tabConfig[activeTab].subTabs.filter((subTab) => {
+    // Super admin sees everything
+    if (isSuperAdmin) return true;
+
+    // Staff view mode has its own set of rules
+    if (viewMode === 'staff') {
+      if (subTab.id === 'permissions') return false; // Never show permissions in staff view
+      if (activeTab === 'training') {
+        return subTab.id === 'profile' || subTab.id === 'courses';
+      }
+      if (activeTab === 'policies') {
+        return subTab.id !== 'view-feedback'; // Hide view-feedback in staff view
+      }
+      return true; // Show all other non-admin tabs
+    }
+    
+    // Admin view mode rules
+    if (isAdmin) {
+       // Permissions sub-tab only for super admin
+      if (subTab.id === 'permissions' && !isSuperAdmin) return false;
+      return isSubTabEnabled(activeTab, subTab.id);
+    }
+    
+    return true; // Default to showing the tab if no other rule applies
+  });
   
   const handleSubTabChange = (subTab: string) => {
     if (onSubTabChange) {
@@ -135,15 +162,15 @@ export default function MainLayout({
         <div className="flex h-16 items-center px-6">
           <div className="flex items-center space-x-8">
             <div className="flex items-center space-x-2">
-              <Shield className="h-8 w-8 text-coral" />
+              <Shield className="h-8 w-8 text-foreground" />
               <span className="text-xl font-bold text-foreground">OriComply</span>
             </div>
             
             <nav className="flex space-x-1">
               {Object.entries(tabConfig)
                 .filter(([key]) => {
-                  // Show only policies and training when in staff view mode
-                  if (viewMode === 'staff' && !['policies', 'training', 'newsfeed'].includes(key)) {
+                  // Show only policies, training, and announcements when in staff view mode
+                  if (viewMode === 'staff' && !['policies', 'training', 'announcements'].includes(key)) {
                     return false;
                   }
                   return true;
@@ -157,7 +184,9 @@ export default function MainLayout({
                       key={key}
                        onClick={() => {
                          onTabChange(key as Tab);
-                         handleSubTabChange(config.subTabs[0].id);
+                         if (config.subTabs.length > 0) {
+                          handleSubTabChange(config.subTabs[0].id);
+                         }
                        }}
                       className={cn(
                         "flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200",
@@ -203,7 +232,7 @@ export default function MainLayout({
 
       <div className="flex">
         {/* Left Sidebar - Hide for training tab since it has no sub-tabs */}
-        {tabConfig[activeTab].subTabs.length > 0 && (
+        {visibleSubTabs.length > 0 && (
           <aside className="w-64 border-r border-border bg-card">
             <div className="p-4">
               <h3 className="text-sm font-semibold text-foreground/60 uppercase tracking-wide mb-3">
@@ -216,20 +245,24 @@ export default function MainLayout({
                     if (isSuperAdmin) return true;
                     
                     // Permissions sub-tab only for super admin
-                    if (subTab.id === 'permissions') return false;
+                    if (subTab.id === 'permissions' && !isSuperAdmin) return false;
                     
                     // Regular admin sees based on permissions when in admin view
                     if (isAdmin && viewMode === 'admin') {
                       return isSubTabEnabled(activeTab, subTab.id);
                     }
                     
-                    // Staff view filtering
+                    // Staff view filtering (applies to staff and admins in staff view)
                     if (!isAdmin || viewMode === 'staff') {
                       if (activeTab === 'training') {
                         // Staff can only see profile and courses in training
                         return subTab.id === 'profile' || subTab.id === 'courses';
                       }
-                      // For other tabs, show all
+                      if (activeTab === 'policies') {
+                        // In staff view, hide the 'view-feedback' sub-tab
+                        return subTab.id !== 'view-feedback';
+                      }
+                      // For other tabs, show all sub-tabs
                       return true;
                     }
                     

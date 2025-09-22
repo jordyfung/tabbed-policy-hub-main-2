@@ -191,7 +191,7 @@ function getContentType(filePath: string): string {
     'html': 'text/html',
     'htm': 'text/html',
     'css': 'text/css',
-    'js': 'application/javascript',
+    'js': 'text/javascript',
     'json': 'application/json',
     'xml': 'application/xml',
     'png': 'image/png',
