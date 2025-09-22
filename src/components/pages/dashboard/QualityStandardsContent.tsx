@@ -1,95 +1,84 @@
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Shield, Users, Heart, Building, Utensils, Pill, AlertTriangle, UserCheck } from 'lucide-react';
+import { Shield, Users, Heart, Building, Utensils, Pill, UserCheck } from 'lucide-react';
 
 const qualityStandards = [
   {
     id: 1,
-    name: 'Governance and Management',
-    description: 'Leadership, planning, continuous improvement',
+    name: 'The Individual',
+    description: 'Person-centred care, dignity, respect, and quality of life.',
     score: 94,
     status: 'compliant',
-    icon: Shield,
-    color: 'governance',
+    icon: UserCheck,
+    color: 'standard-1-person',
     policies: 12,
     lastAudit: '2024-01-15'
   },
   {
     id: 2,
-    name: 'Care and Services',
-    description: 'Assessment, planning, delivery, review',
+    name: 'The Organisation',
+    description: 'Governance, quality systems, and workforce management.',
     score: 89,
     status: 'compliant',
-    icon: Heart,
-    color: 'clinical',
+    icon: Shield,
+    color: 'standard-2-organisation',
     policies: 18,
     lastAudit: '2024-01-10'
   },
   {
     id: 3,
-    name: 'Personal and Clinical Care',
-    description: 'Evidence-based care and support',
+    name: 'The Care and Services',
+    description: 'Assessment, planning, and delivery of care and services.',
     score: 92,
     status: 'compliant',
-    icon: UserCheck,
-    color: 'personal',
+    icon: Heart,
+    color: 'standard-3-care',
     policies: 24,
     lastAudit: '2024-01-08'
   },
   {
     id: 4,
-    name: 'Services and Supports',
-    description: 'Daily living, community access',
+    name: 'The Environment',
+    description: 'Safe and supportive physical environment.',
     score: 87,
     status: 'attention',
-    icon: Users,
-    color: 'clinical',
+    icon: Building,
+    color: 'standard-4-environment',
     policies: 15,
     lastAudit: '2024-01-12'
   },
   {
     id: 5,
-    name: 'Organisation\'s Service Environment',
-    description: 'Physical environment, equipment',
+    name: 'Clinical Care',
+    description: 'Safe and quality clinical care services.',
     score: 96,
     status: 'compliant',
-    icon: Building,
-    color: 'environment',
+    icon: Pill,
+    color: 'standard-5-clinical',
     policies: 9,
     lastAudit: '2024-01-20'
   },
   {
     id: 6,
-    name: 'Feedback and Complaints',
-    description: 'Consumer feedback systems',
+    name: 'Food and Nutrition',
+    description: 'Nutritious food and enjoyable dining experiences.',
     score: 91,
     status: 'compliant',
-    icon: AlertTriangle,
-    color: 'incidents',
+    icon: Utensils,
+    color: 'standard-6-nutrition',
     policies: 6,
     lastAudit: '2024-01-18'
   },
   {
     id: 7,
-    name: 'Human Resources',
-    description: 'Workforce planning, development',
+    name: 'The Residential Community',
+    description: 'Supporting daily living and community connections.',
     score: 85,
     status: 'attention',
     icon: Users,
-    color: 'workforce',
+    color: 'standard-7-community',
     policies: 21,
     lastAudit: '2024-01-14'
-  },
-  {
-    id: 8,
-    name: 'Organisational Governance',
-    description: 'Corporate governance, risk management',
-    score: 93,
-    status: 'compliant',
-    icon: Shield,
-    color: 'governance',
-    policies: 16,
-    lastAudit: '2024-01-16'
   }
 ];
 

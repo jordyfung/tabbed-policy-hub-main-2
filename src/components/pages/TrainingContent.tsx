@@ -1,7 +1,6 @@
 import { useAuth } from '@/hooks/useAuth';
 import { usePermissions } from '@/hooks/usePermissions';
 import StaffProfileContent from '@/components/pages/training/StaffProfileContent';
-import TrainingOverviewContent from '@/components/pages/training/TrainingOverviewContent';
 import CoursesContent from '@/components/pages/training/CoursesContent';
 import CourseManagement from '@/components/training/CourseManagement';
 import CourseAssignments from '@/components/training/CourseAssignments';
@@ -18,9 +17,6 @@ export default function TrainingContent({ activeSubTab = 'profile' }: TrainingCo
     switch (activeSubTab) {
       case 'profile':
         return <StaffProfileContent />;
-      case 'overview':
-        if (!isSubTabEnabled('training', 'overview')) return <div>Access denied</div>;
-        return <TrainingOverviewContent />;
       case 'courses':
         return <CoursesContent />;
       case 'management':

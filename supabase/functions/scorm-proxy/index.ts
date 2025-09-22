@@ -50,8 +50,16 @@ Deno.serve(async (req) => {
 
     console.log(`Serving ${filePath} as ${finalContentType}`)
 
-    // Define ultra-permissive CSP for SCORM content
-    const scormCSP = "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; img-src * data: blob:; font-src * data:; connect-src * data: blob:; frame-src *;"
+    // Define a more permissive CSP for SCORM content
+    const scormCSP = [
+      "default-src 'self' * 'unsafe-inline' 'unsafe-eval' data: blob:",
+      "script-src 'self' * 'unsafe-inline' 'unsafe-eval'",
+      "style-src 'self' * 'unsafe-inline'",
+      "img-src 'self' * data: blob:",
+      "font-src 'self' * data:",
+      "connect-src 'self' * data: blob:",
+      "frame-src 'self' * data: blob:",
+    ].join('; ');
 
     // Return the response with minimal required headers
     return new Response(fileData, {
@@ -59,7 +67,7 @@ Deno.serve(async (req) => {
         'Content-Type': finalContentType,
         'Content-Security-Policy': scormCSP,
         'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'public, max-age=3600'
+        'Cache-Control': 'no-cache, no-store, must-revalidate'
       }
     })
 
@@ -82,7 +90,7 @@ function getContentType(filePath: string): string {
     'html': 'text/html',
     'htm': 'text/html',
     'css': 'text/css',
-    'js': 'application/javascript',
+    'js': 'text/javascript',
     'json': 'application/json',
     'xml': 'application/xml',
     'png': 'image/png',

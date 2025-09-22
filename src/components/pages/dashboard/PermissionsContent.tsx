@@ -13,38 +13,45 @@ const tabConfig = {
     icon: Shield,
     subtabs: [
       { id: 'overview', label: 'Overview' },
+      { id: 'standards', label: 'Quality Standards' },
       { id: 'analytics', label: 'Analytics' },
       { id: 'reports', label: 'Reports' },
       { id: 'team', label: 'Team' },
-      { id: 'quality-standards', label: 'Quality Standards' },
-    ]
+    ],
+  },
+  newsfeed: {
+    label: 'Newsfeed',
+    icon: Users, // Using Users icon as a placeholder, can be changed
+    subtabs: [
+      { id: 'feed', label: 'Feed' },
+      { id: 'chat', label: 'AI Chat' },
+    ],
   },
   policies: {
     label: 'Policies',
     icon: FileText,
     subtabs: [
-      { id: 'overview', label: 'Overview' },
-      { id: 'management', label: 'Management' },
-    ]
+      { id: 'documents', label: 'Documents' },
+      { id: 'ai-assistant', label: 'AI Assistant' },
+    ],
   },
   training: {
     label: 'Training',
     icon: BookOpen,
     subtabs: [
-      { id: 'overview', label: 'Overview' },
+      { id: 'profile', label: 'Profile' },
       { id: 'courses', label: 'Courses' },
+      { id: 'management', label: 'Management' },
       { id: 'assignments', label: 'Assignments' },
-    ]
+    ],
   },
   assurance: {
     label: 'Assurance',
     icon: CheckCircle,
     subtabs: [
       { id: 'overview', label: 'Overview' },
-      { id: 'audits', label: 'Audits' },
-      { id: 'incidents', label: 'Incidents' },
-      { id: 'improvements', label: 'Improvements' },
-    ]
+      { id: 'feedback', label: 'Feedback & Complaints' },
+    ],
   },
 };
 

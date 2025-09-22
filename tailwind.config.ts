@@ -101,6 +101,27 @@ export default {
         workforce: {
           DEFAULT: "hsl(var(--workforce))",
         },
+        "standard-1-person": {
+          DEFAULT: "hsl(var(--standard-1-person))",
+        },
+        "standard-2-organisation": {
+          DEFAULT: "hsl(var(--standard-2-organisation))",
+        },
+        "standard-3-care": {
+          DEFAULT: "hsl(var(--standard-3-care))",
+        },
+        "standard-4-environment": {
+          DEFAULT: "hsl(var(--standard-4-environment))",
+        },
+        "standard-5-clinical": {
+          DEFAULT: "hsl(var(--standard-5-clinical))",
+        },
+        "standard-6-nutrition": {
+          DEFAULT: "hsl(var(--standard-6-nutrition))",
+        },
+        "standard-7-community": {
+          DEFAULT: "hsl(var(--standard-7-community))",
+        },
         nav: {
           background: "hsl(var(--nav-background))",
           border: "hsl(var(--nav-border))",
