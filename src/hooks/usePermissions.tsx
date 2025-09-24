@@ -9,6 +9,7 @@ interface Permission {
   is_enabled: boolean;
 }
 
+
 interface PermissionsContextType {
   permissions: Permission[];
   loading: boolean;
@@ -51,18 +52,19 @@ export const PermissionsProvider = ({ children }: PermissionsProviderProps) => {
     }
 
     try {
-      const { data, error } = await supabase
+      // Fetch sub-tab permissions
+      const { data: permissionsData, error: permissionsError } = await supabase
         .from('admin_permissions')
         .select('*')
         .order('tab_id', { ascending: true })
         .order('subtab_id', { ascending: true });
 
-      if (error) {
-        console.error('Error fetching permissions:', error);
+      if (permissionsError) {
+        console.error('Error fetching permissions:', permissionsError);
         return;
       }
 
-      setPermissions(data || []);
+      setPermissions(permissionsData || []);
     } catch (error) {
       console.error('Error fetching permissions:', error);
     } finally {
