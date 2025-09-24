@@ -1,7 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
 import ChatInterface from '@/components/ui/chat-interface';
-import FeedbackContent from './policies/FeedbackContent';
-import ViewFeedbackContent from './policies/ViewFeedbackContent';
 
 interface PoliciesContentProps {
   activeSubTab?: string;
@@ -18,10 +16,6 @@ export default function PoliciesContent({ activeSubTab = 'documents' }: Policies
             <ChatInterface />
           </div>
         );
-      case 'feedback':
-        return <FeedbackContent />;
-      case 'view-feedback':
-        return isAdmin && viewMode === 'admin' ? <ViewFeedbackContent /> : null;
       case 'documents':
         return (
           <div className="space-y-6">
