@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Shield, Users, Heart, Building, Utensils, Pill, UserCheck } from 'lucide-react';
+import { Shield, Users, Heart, Building, Utensils, Pill, UserCheck, AlertTriangle } from 'lucide-react';
 
 const qualityStandards = [
   {

@@ -1,17 +1,12 @@
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, AlertTriangle, Clock, TrendingUp, Shield, Users, Stethoscope, UserCheck, Building, Heart, CalendarClock, Activity } from 'lucide-react';
-import FeedbackContent from './assurance/FeedbackContent';
 
 interface AssuranceContentProps {
   activeSubTab?: string;
 }
 
 export default function AssuranceContent({ activeSubTab = 'overview' }: AssuranceContentProps) {
-  // Route to feedback sub-page if selected
-  if (activeSubTab === 'feedback') {
-    return <FeedbackContent />;
-  }
   // Aged Care Specific Audits
   const audits = [
     {
