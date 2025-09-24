@@ -11,10 +11,45 @@ import AnnouncementsContent from '@/components/pages/AnnouncementsContent';
 
 type Tab = 'dashboard' | 'newsfeed' | 'policies' | 'training' | 'assurance' | 'announcements';
 
+// Tab visibility configuration - set to false to hide tabs without deleting code
+const tabVisibility: Record<Tab, boolean> = {
+  dashboard: false,
+  newsfeed: false,
+  policies: true,
+  training: true,
+  assurance: true,
+  announcements: false,
+};
+
 const Index = () => {
-  const { isAdmin } = useAuth();
-  const [activeTab, setActiveTab] = useState<Tab>('dashboard');
+  const { isAdmin, viewMode } = useAuth();
+  const [activeTab, setActiveTab] = useState<Tab>('policies');
   const [activeSubTab, setActiveSubTab] = useState('overview');
+
+  // Check if current tab is visible and switch to first available if not
+  useEffect(() => {
+    const isTabVisible = (tab: Tab) => {
+      // Check tab visibility configuration first
+      if (!tabVisibility[tab]) {
+        return false;
+      }
+
+      // Show only policies, training, and announcements when in staff view mode
+      if (viewMode === 'staff' && !['policies', 'training', 'announcements'].includes(tab)) {
+        return false;
+      }
+
+      return true;
+    };
+
+    if (!isTabVisible(activeTab)) {
+      // Find the first visible tab
+      const visibleTabs = Object.keys(tabVisibility).filter(tab => isTabVisible(tab as Tab)) as Tab[];
+      if (visibleTabs.length > 0) {
+        setActiveTab(visibleTabs[0]);
+      }
+    }
+  }, [activeTab, viewMode]);
 
   const renderContent = () => {
     switch (activeTab) {

@@ -37,6 +37,16 @@ interface SubTab {
   color: 'coral' | 'success' | 'info';
 }
 
+// Tab visibility configuration - set to false to hide tabs without deleting code
+const tabVisibility: Record<Tab, boolean> = {
+  dashboard: false,
+  newsfeed: false,
+  policies: true,
+  training: true,
+  assurance: true,
+  announcements: false,
+};
+
 const tabConfig = {
   dashboard: {
     label: 'Dashboard',
@@ -169,6 +179,11 @@ export default function MainLayout({
             <nav className="flex space-x-1">
               {Object.entries(tabConfig)
                 .filter(([key]) => {
+                  // Check tab visibility configuration first
+                  if (!tabVisibility[key as Tab]) {
+                    return false;
+                  }
+
                   // Show only policies, training, and announcements when in staff view mode
                   if (viewMode === 'staff' && !['policies', 'training', 'announcements'].includes(key)) {
                     return false;

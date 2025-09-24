@@ -405,11 +405,8 @@ export default function CourseManagement() {
               </DialogTitle>
             </DialogHeader>
             <ScormPlayer
-              courseId={playingCourse.id}
-              courseName={playingCourse.title}
-              entryPoint={playingCourse.scorm_entry_point || 'index.html'}
-              packagePath={playingCourse.scorm_package_path || ''}
-              onClose={() => setPlayingCourse(null)}
+              manifestUrl={`/scorm_packages/${playingCourse.scorm_package_path}/${playingCourse.scorm_entry_point}`}
+              scormCourseId={playingCourse.id}
             />
           </DialogContent>
         </Dialog>
