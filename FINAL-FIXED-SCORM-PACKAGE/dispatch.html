@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<!-- BULLETPROOF SCORM 1.2 Implementation -->
+<html>
+<head>
+    <title>SCORM Course - Best Practice Feedback and Complaints Handling</title>
+    <meta charset="utf-8">
+    <script src="configuration.js"></script>
+    <script src="utils.js"></script>
+    <script src="scormdriver.js"></script>
+    <script src="dispatch.client.loader.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        .content {
+            display: none;
+            height: 100vh;
+            width: 100%;
+        }
+        .error {
+            display: none;
+            padding: 20px;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" class="loading">
+        <div>
+            <h2>Loading SCORM Course...</h2>
+            <p>Please wait while the course initializes.</p>
+            <div id="status">Initializing...</div>
+        </div>
+    </div>
+    
+    <div id="content" class="content">
+        <!-- Course content will be loaded here -->
+    </div>
+    
+    <div id="error" class="error">
+        <h3>Error Loading Course</h3>
+        <p id="errorMessage">An error occurred while loading the course content.</p>
+    </div>
+
+    <script>
+        // BULLETPROOF SCORM 1.2 Implementation
+        var scormAPI = null;
+        var isInitialized = false;
+        var loadAttempts = 0;
+        var maxLoadAttempts = 10;
+
+        // Enhanced API discovery based on SCORM 1.2 specification
+        function findSCORMAPI() {
+            var attempts = 0;
+            var maxAttempts = 7;
+            var win = window;
+            
+            console.log("Starting SCORM API discovery...");
+            
+            while (win && attempts < maxAttempts) {
+                console.log("Checking window level:", attempts);
+                
+                // Check if this window has the API
+                if (win.API && typeof win.API.LMSInitialize === 'function') {
+                    console.log("✅ SCORM API found at level:", attempts);
+                    return win.API;
+                }
+                
+                // Move to parent window
+                if (win.parent && win.parent !== win) {
+                    win = win.parent;
+                    attempts++;
+                } else {
+                    break;
+                }
+            }
+            
+            console.warn("❌ SCORM API not found after", attempts, "attempts");
+            return null;
+        }
+
+        // Initialize SCORM communication
+        function initializeSCORM() {
+            console.log("Initializing SCORM...");
+            
+            scormAPI = findSCORMAPI();
+            
+            if (scormAPI) {
+                try {
+                    var result = scormAPI.LMSInitialize('');
+                    if (result === 'true') {
+                        isInitialized = true;
+                        console.log("✅ SCORM initialized successfully");
+                        updateStatus("SCORM API connected successfully");
+                        return true;
+                    } else {
+                        console.error("❌ SCORM initialization failed:", result);
+                        updateStatus("SCORM initialization failed: " + result);
+                        return false;
+                    }
+                } catch (error) {
+                    console.error("❌ SCORM initialization error:", error);
+                    updateStatus("SCORM initialization error: " + error.message);
+                    return false;
+                }
+            } else {
+                console.warn("⚠️ No SCORM API found - running in standalone mode");
+                updateStatus("No SCORM API found - running in standalone mode");
+                return false;
+            }
+        }
+
+        // Update status display
+        function updateStatus(message) {
+            var statusEl = document.getElementById('status');
+            if (statusEl) {
+                statusEl.textContent = message;
+            }
+            console.log("Status:", message);
+        }
+
+        // Load course content
+        function loadCourseContent() {
+            console.log("Loading course content...");
+            updateStatus("Loading course content...");
+            
+            fetch('blank.html')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to load course content: ' + response.status);
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    // Extract body content
+                    var bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+                    var content = bodyMatch ? bodyMatch[1] : html;
+                    
+                    // Hide loading and show content
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('content').style.display = 'block';
+                    document.getElementById('content').innerHTML = content;
+                    
+                    console.log("✅ Course content loaded successfully");
+                    updateStatus("Course loaded successfully");
+                })
+                .catch(error => {
+                    console.error("❌ Error loading course content:", error);
+                    showError("Failed to load course content: " + error.message);
+                });
+        }
+
+        // Show error message
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        // Main initialization function
+        function initializeCourse() {
+            console.log("🚀 Starting SCORM course initialization...");
+            
+            // Try to initialize SCORM
+            var scormSuccess = initializeSCORM();
+            
+            // Load content regardless of SCORM status
+            setTimeout(function() {
+                loadCourseContent();
+            }, 1000);
+        }
+
+        // Start the course when page loads
+        window.addEventListener('load', function() {
+            console.log("📚 SCORM Course page loaded");
+            initializeCourse();
+        });
+
+        // Handle page unload
+        window.addEventListener('beforeunload', function() {
+            if (scormAPI && isInitialized) {
+                try {
+                    scormAPI.LMSFinish('');
+                    console.log("✅ SCORM session finished");
+                } catch (error) {
+                    console.error("❌ Error finishing SCORM session:", error);
+                }
+            }
+        });
+
+        // Make SCORM API available globally for content
+        window.scormAPI = scormAPI;
+        window.isSCORMInitialized = function() { return isInitialized; };
+    </script>
+</body>
+</html>

@@ -1,14 +1,16 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { usePermissions } from '@/hooks/usePermissions';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import UserProfileDropdown from '@/components/ui/UserProfileDropdown';
-import { 
-  LayoutDashboard, 
-  Shield, 
-  GraduationCap, 
-  CheckCircle, 
+import LanguageToggle from '@/components/ui/LanguageToggle';
+import {
+  LayoutDashboard,
+  Shield,
+  GraduationCap,
+  CheckCircle,
   MessageSquare,
   ChevronRight,
   FileText,
@@ -18,7 +20,6 @@ import {
   BookOpen,
   Video,
   Award,
-  ClipboardList,
   Bot,
   LogOut,
   User,
@@ -39,7 +40,7 @@ interface SubTab {
 
 // Tab visibility configuration - set to false to hide tabs without deleting code
 const tabVisibility: Record<Tab, boolean> = {
-  dashboard: false,
+  dashboard: true,
   newsfeed: false,
   policies: true,
   training: true,
@@ -49,19 +50,20 @@ const tabVisibility: Record<Tab, boolean> = {
 
 const tabConfig = {
   dashboard: {
-    label: 'Dashboard',
+    label: 'nav.dashboard',
     icon: LayoutDashboard,
     subTabs: [
-      { id: 'overview', label: 'Overview', icon: BarChart3, color: 'coral' as const },
-      { id: 'standards', label: 'Quality Standards', icon: Shield, color: 'success' as const },
-      { id: 'analytics', label: 'Analytics', icon: BarChart3, color: 'success' as const },
-      { id: 'reports', label: 'Reports', icon: FileText, color: 'info' as const },
-      { id: 'team', label: 'Team', icon: Users, color: 'coral' as const },
-      { id: 'permissions', label: 'Permissions', icon: Settings, color: 'info' as const }
+      { id: 'overview', label: 'dashboard.overview', icon: BarChart3, color: 'coral' as const },
+      { id: 'standards', label: 'dashboard.standards', icon: Shield, color: 'success' as const },
+      { id: 'analytics', label: 'dashboard.analytics', icon: BarChart3, color: 'success' as const },
+      { id: 'reports', label: 'dashboard.reports', icon: FileText, color: 'info' as const },
+      { id: 'team', label: 'dashboard.team', icon: Users, color: 'coral' as const },
+      { id: 'permissions', label: 'dashboard.permissions', icon: Settings, color: 'info' as const },
+      { id: 'rag-management', label: 'dashboard.ragManagement', icon: Bot, color: 'info' as const }
     ]
   },
   newsfeed: {
-    label: 'Newsfeed',
+    label: 'nav.newsfeed',
     icon: Rss,
     subTabs: [
       { id: 'feed', label: 'Feed', icon: Rss, color: 'coral' as const },
@@ -69,17 +71,15 @@ const tabConfig = {
     ]
   },
   policies: {
-    label: 'Policies',
+    label: 'nav.policies',
     icon: Shield,
     subTabs: [
       { id: 'documents', label: 'Documents', icon: FileText, color: 'success' as const },
-      { id: 'feedback', label: 'Submit Feedback', icon: MessageSquare, color: 'coral' as const },
-      { id: 'view-feedback', label: 'View Feedback', icon: ClipboardList, color: 'success' as const },
       { id: 'ai-assistant', label: 'AI Assistant', icon: Bot, color: 'info' as const }
     ]
   },
   training: {
-    label: 'Training',
+    label: 'nav.training',
     icon: GraduationCap,
     subTabs: [
       { id: 'profile', label: 'Profile', icon: Users, color: 'coral' as const },
@@ -89,15 +89,15 @@ const tabConfig = {
     ]
   },
   assurance: {
-    label: 'Assurance',
+    label: 'nav.assurance',
     icon: CheckCircle,
     subTabs: [
-      { id: 'overview', label: 'Overview', icon: CheckCircle, color: 'success' as const },
+      { id: 'overview', label: 'dashboard.overview', icon: CheckCircle, color: 'success' as const },
       { id: 'feedback', label: 'Feedback & Complaints', icon: MessageSquare, color: 'info' as const }
     ]
   },
   announcements: {
-    label: 'Announcements',
+    label: 'nav.announcements',
     icon: Rss,
     subTabs: []
   }
@@ -111,20 +111,21 @@ interface MainLayoutProps {
   onSubTabChange?: (subTab: string) => void;
 }
 
-export default function MainLayout({ 
-  children, 
-  activeTab, 
-  onTabChange, 
+export default function MainLayout({
+  children,
+  activeTab,
+  onTabChange,
   activeSubTab = 'overview',
-  onSubTabChange 
+  onSubTabChange
 }: MainLayoutProps) {
+  const { t } = useTranslation();
   const { profile, signOut, isAdmin, isSuperAdmin, viewMode, toggleViewMode } = useAuth();
   const { isSubTabEnabled } = usePermissions();
   const [internalActiveSubTab, setInternalActiveSubTab] = useState('overview');
   
   const currentActiveSubTab = activeSubTab || internalActiveSubTab;
 
-  const visibleSubTabs = tabConfig[activeTab].subTabs.filter((subTab) => {
+  const visibleSubTabs = activeTab === 'policies' ? [] : tabConfig[activeTab].subTabs.filter((subTab) => {
     // Super admin sees everything
     if (isSuperAdmin) return true;
 
@@ -135,7 +136,7 @@ export default function MainLayout({
         return subTab.id === 'profile' || subTab.id === 'courses';
       }
       if (activeTab === 'policies') {
-        return subTab.id !== 'view-feedback'; // Hide view-feedback in staff view
+        return true; // Show all policy sub-tabs in staff view
       }
       return true; // Show all other non-admin tabs
     }
@@ -173,24 +174,30 @@ export default function MainLayout({
           <div className="flex items-center space-x-8">
             <div className="flex items-center space-x-2">
               <Shield className="h-8 w-8 text-foreground" />
-              <span className="text-xl font-bold text-foreground">OriComply</span>
+              <span className="text-xl font-bold text-foreground">{t('app.name')}</span>
             </div>
             
             <nav className="flex space-x-1">
-              {Object.entries(tabConfig)
-                .filter(([key]) => {
-                  // Check tab visibility configuration first
-                  if (!tabVisibility[key as Tab]) {
-                    return false;
-                  }
+              {(() => {
+                const filteredTabs = Object.entries(tabConfig)
+                  .filter(([key]) => {
+                    // Check tab visibility configuration first
+                    if (!tabVisibility[key as Tab]) {
+                      console.log(`Tab ${key} hidden by tabVisibility config`);
+                      return false;
+                    }
 
-                  // Show only policies, training, and announcements when in staff view mode
-                  if (viewMode === 'staff' && !['policies', 'training', 'announcements'].includes(key)) {
-                    return false;
-                  }
-                  return true;
-                })
-                .map(([key, config]) => {
+                    // Show only policies, training, and announcements when in staff view mode
+                    if (viewMode === 'staff' && !['policies', 'training', 'announcements'].includes(key)) {
+                      console.log(`Tab ${key} hidden in staff view mode`);
+                      return false;
+                    }
+                    console.log(`Tab ${key} is visible`);
+                    return true;
+                  });
+                console.log('Visible tabs:', filteredTabs.map(([key]) => key));
+                return filteredTabs;
+              })().map(([key, config]) => {
                   const isActive = activeTab === key;
                   const Icon = config.icon;
                   
@@ -198,8 +205,10 @@ export default function MainLayout({
                     <button
                       key={key}
                        onClick={() => {
+                         console.log(`Tab clicked: ${key}`);
                          onTabChange(key as Tab);
-                         if (config.subTabs.length > 0) {
+                         if (key !== 'policies' && config.subTabs.length > 0) {
+                          console.log(`Setting first sub-tab: ${config.subTabs[0].id}`);
                           handleSubTabChange(config.subTabs[0].id);
                          }
                        }}
@@ -211,18 +220,18 @@ export default function MainLayout({
                       )}
                     >
                       <Icon className="h-4 w-4" />
-                      <span>{config.label}</span>
+                      <span>{t(config.label)}</span>
                     </button>
                   );
                 })}
             </nav>
           </div>
           
-          {/* Admin View Toggle and User Profile */}
+          {/* Admin View Toggle, Language Toggle and User Profile */}
           <div className="ml-auto flex items-center space-x-4">
             {isAdmin && (
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-foreground/60">View Mode:</span>
+                <span className="text-sm text-foreground/60">{t('nav.viewMode')}:</span>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -236,10 +245,11 @@ export default function MainLayout({
                   )}
                 </Button>
                 <span className="text-sm text-foreground/60">
-                  {viewMode === 'admin' ? 'Admin' : 'Staff'}
+                  {viewMode === 'admin' ? t('nav.admin') : t('nav.staff')}
                 </span>
               </div>
             )}
+            <LanguageToggle />
             <UserProfileDropdown />
           </div>
         </div>
@@ -251,7 +261,7 @@ export default function MainLayout({
           <aside className="w-64 border-r border-border bg-card">
             <div className="p-4">
               <h3 className="text-sm font-semibold text-foreground/60 uppercase tracking-wide mb-3">
-                {tabConfig[activeTab].label}
+                {t(tabConfig[activeTab].label)}
               </h3>
               <nav className="space-y-1">
                  {tabConfig[activeTab].subTabs
@@ -274,8 +284,8 @@ export default function MainLayout({
                         return subTab.id === 'profile' || subTab.id === 'courses';
                       }
                       if (activeTab === 'policies') {
-                        // In staff view, hide the 'view-feedback' sub-tab
-                        return subTab.id !== 'view-feedback';
+                        // Show all policy sub-tabs in staff view
+                        return true;
                       }
                       // For other tabs, show all sub-tabs
                       return true;
@@ -299,7 +309,7 @@ export default function MainLayout({
                         )}
                       >
                         <Icon className="h-4 w-4 flex-shrink-0" />
-                        <span>{subTab.label}</span>
+                        <span>{t(subTab.label)}</span>
                       </button>
                     );
                   })}
@@ -309,7 +319,7 @@ export default function MainLayout({
         )}
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
+        <main className={cn("flex-1", activeTab === 'policies' ? "p-0" : "p-6")}>
           {children}
         </main>
       </div>

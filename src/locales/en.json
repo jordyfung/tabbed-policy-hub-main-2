@@ -1,0 +1,130 @@
+{
+  "app": {
+    "name": "OriComply"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "newsfeed": "Newsfeed",
+    "policies": "Policies",
+    "training": "Training",
+    "assurance": "Assurance",
+    "announcements": "Announcements",
+    "viewMode": "View Mode",
+    "admin": "Admin",
+    "staff": "Staff"
+  },
+  "dashboard": {
+    "title": "Aged Care Dashboard",
+    "subtitle": "Monitor Quality Standards compliance and aged care performance",
+    "overview": "Overview",
+    "standards": "Quality Standards",
+    "analytics": "Analytics",
+    "reports": "Reports",
+    "team": "Team",
+    "permissions": "Permissions",
+    "ragManagement": "RAG Management",
+    "stats": {
+      "acqscCompliance": "ACQSC Compliance",
+      "qualityStandardsMet": "Quality Standards Met",
+      "staffCompliance": "Staff Compliance",
+      "openFindings": "Open Findings",
+      "fromLastMonth": "from last month"
+    },
+    "recentActivity": "Recent Activity",
+    "upcomingTasks": "Upcoming Tasks"
+  },
+  "userProfile": {
+    "viewProfile": "View Profile",
+    "updatePhoto": "Update Photo",
+    "accountSettings": "Account Settings",
+    "signOut": "Sign Out",
+    "superAdmin": "Super Admin",
+    "admin": "Admin",
+    "staffView": "Staff View"
+  },
+  "accountSettings": {
+    "title": "Account Settings",
+    "description": "Manage your account preferences and notification settings.",
+    "notifications": "Notifications",
+    "emailNotifications": "Email Notifications",
+    "emailNotificationsDesc": "Receive notifications via email",
+    "pushNotifications": "Push Notifications",
+    "pushNotificationsDesc": "Receive push notifications in browser",
+    "trainingReminders": "Training Reminders",
+    "trainingRemindersDesc": "Get reminders for upcoming training",
+    "complianceAlerts": "Compliance Alerts",
+    "complianceAlertsDesc": "Receive important compliance updates",
+    "appearance": "Appearance",
+    "theme": "Theme",
+    "language": "Language",
+    "cancel": "Cancel",
+    "saveSettings": "Save Settings",
+    "saving": "Saving..."
+  },
+  "languages": {
+    "en": "English",
+    "zh": "中文",
+    "es": "Spanish",
+    "fr": "French"
+  },
+  "themes": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "trainingProfile": {
+    "titleAdmin": "Staff Training Profile",
+    "titleSelf": "My Training Profile",
+    "subtitleAdmin": "View individual staff training progress and history",
+    "subtitleSelf": "Track your training progress and achievements",
+    "timeAtCompany": "Time at Company",
+    "trainingProgress": "Training Progress",
+    "totalXP": "Total XP",
+    "currentAssignments": "Current Assignments",
+    "upcomingDeadlines": "Upcoming Deadlines",
+    "emptyState": "No training assignments found.",
+    "mandatoryCompliance": "Mandatory Compliance",
+    "labels": {
+      "due": "Due",
+      "lastCompleted": "Last completed"
+    },
+    "badges": {
+      "mandatory": "Mandatory",
+      "completed": "Completed",
+      "overdue": "Overdue",
+      "dueSoon": "Due Soon",
+      "pending": "Pending"
+    },
+    "actions": {
+      "continue": "Continue Training",
+      "start": "Start",
+      "viewDetails": "View details",
+      "markDone": "Mark as done"
+    },
+    "tooltips": {
+      "mandatory": "This course is required",
+      "completed": "You have completed this assignment",
+      "overdue": "This assignment is past due",
+      "dueSoon": "This assignment is due within a week",
+      "pending": "Assignment not yet started",
+      "progress": "Overall training completion",
+      "totalXp": "Total experience points earned",
+      "timeAtCompany": "Time since account creation"
+    },
+    "toasts": {
+      "markedDone": "Marked as completed (demo)",
+      "start": "Launching course (demo)",
+      "viewDetails": "Opening details (demo)"
+    }
+  },
+  "time": {
+    "day_one": "{{count}} day",
+    "day_other": "{{count}} days",
+    "month_one": "{{count}} month",
+    "month_other": "{{count}} months",
+    "year_one": "{{count}} year",
+    "year_other": "{{count}} years"
+  }
+}
+
+

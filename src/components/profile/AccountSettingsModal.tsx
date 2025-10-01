@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -13,23 +14,27 @@ interface AccountSettingsModalProps {
 }
 
 export default function AccountSettingsModal({ open, onOpenChange }: AccountSettingsModalProps) {
+  const { t, i18n } = useTranslation();
   const { toast } = useToast();
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(true);
   const [trainingReminders, setTrainingReminders] = useState(true);
   const [complianceAlerts, setComplianceAlerts] = useState(true);
   const [theme, setTheme] = useState('system');
-  const [language, setLanguage] = useState('en');
+  const [language, setLanguage] = useState(i18n.language || 'en');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSaveSettings = async () => {
     setIsLoading(true);
     try {
+      // Change language immediately
+      await i18n.changeLanguage(language);
+
       // In a real implementation, this would save to a user_preferences table
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      
+
       toast({
-        title: "Settings saved",
+        title: t('accountSettings.saveSettings'),
         description: "Your account settings have been updated successfully.",
       });
       onOpenChange(false);
@@ -49,22 +54,22 @@ export default function AccountSettingsModal({ open, onOpenChange }: AccountSett
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Account Settings</DialogTitle>
+          <DialogTitle>{t('accountSettings.title')}</DialogTitle>
           <DialogDescription>
-            Manage your account preferences and notification settings.
+            {t('accountSettings.description')}
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-6 py-4">
           {/* Notification Settings */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Notifications</h3>
-            
+            <h3 className="text-lg font-medium">{t('accountSettings.notifications')}</h3>
+
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Email Notifications</Label>
+                <Label>{t('accountSettings.emailNotifications')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Receive notifications via email
+                  {t('accountSettings.emailNotificationsDesc')}
                 </p>
               </div>
               <Switch
@@ -72,12 +77,12 @@ export default function AccountSettingsModal({ open, onOpenChange }: AccountSett
                 onCheckedChange={setEmailNotifications}
               />
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Push Notifications</Label>
+                <Label>{t('accountSettings.pushNotifications')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Receive push notifications in browser
+                  {t('accountSettings.pushNotificationsDesc')}
                 </p>
               </div>
               <Switch
@@ -85,12 +90,12 @@ export default function AccountSettingsModal({ open, onOpenChange }: AccountSett
                 onCheckedChange={setPushNotifications}
               />
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Training Reminders</Label>
+                <Label>{t('accountSettings.trainingReminders')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Get reminders for upcoming training
+                  {t('accountSettings.trainingRemindersDesc')}
                 </p>
               </div>
               <Switch
@@ -98,12 +103,12 @@ export default function AccountSettingsModal({ open, onOpenChange }: AccountSett
                 onCheckedChange={setTrainingReminders}
               />
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Compliance Alerts</Label>
+                <Label>{t('accountSettings.complianceAlerts')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Receive important compliance updates
+                  {t('accountSettings.complianceAlertsDesc')}
                 </p>
               </div>
               <Switch
@@ -117,32 +122,33 @@ export default function AccountSettingsModal({ open, onOpenChange }: AccountSett
 
           {/* Appearance Settings */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Appearance</h3>
-            
+            <h3 className="text-lg font-medium">{t('accountSettings.appearance')}</h3>
+
             <div className="space-y-2">
-              <Label>Theme</Label>
+              <Label>{t('accountSettings.theme')}</Label>
               <Select value={theme} onValueChange={setTheme}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="light">Light</SelectItem>
-                  <SelectItem value="dark">Dark</SelectItem>
-                  <SelectItem value="system">System</SelectItem>
+                  <SelectItem value="light">{t('themes.light')}</SelectItem>
+                  <SelectItem value="dark">{t('themes.dark')}</SelectItem>
+                  <SelectItem value="system">{t('themes.system')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
-              <Label>Language</Label>
+              <Label>{t('accountSettings.language')}</Label>
               <Select value={language} onValueChange={setLanguage}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="es">Spanish</SelectItem>
-                  <SelectItem value="fr">French</SelectItem>
+                  <SelectItem value="en">{t('languages.en')}</SelectItem>
+                  <SelectItem value="zh">{t('languages.zh')}</SelectItem>
+                  <SelectItem value="es">{t('languages.es')}</SelectItem>
+                  <SelectItem value="fr">{t('languages.fr')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -151,10 +157,10 @@ export default function AccountSettingsModal({ open, onOpenChange }: AccountSett
         
         <div className="flex justify-end space-x-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t('accountSettings.cancel')}
           </Button>
           <Button onClick={handleSaveSettings} disabled={isLoading}>
-            {isLoading ? 'Saving...' : 'Save Settings'}
+            {isLoading ? t('accountSettings.saving') : t('accountSettings.saveSettings')}
           </Button>
         </div>
       </DialogContent>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SCORM Launch Test</title>
+</head>
+<body>
+    <h1>SCORM Launch Test</h1>
+    <button onclick="testScormLaunch()">Test SCORM Launch</button>
+    <div id="result"></div>
+
+    <script>
+        async function testScormLaunch() {
+            const manifestUrl = 'https://prpfrwqqsxqsikehzosd.supabase.co/functions/v1/scorm-proxy?path=content/95eef94d-554a-4202-afa9-715425079d53/dispatch.html';
+            
+            try {
+                console.log('Fetching SCORM content from:', manifestUrl);
+                const response = await fetch(manifestUrl);
+                const html = await response.text();
+                
+                console.log('Fetched HTML content, length:', html.length);
+                console.log('First 200 chars:', html.substring(0, 200));
+                
+                const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
+                console.log('Created data URL, length:', dataUrl.length);
+                
+                const newWindow = window.open(dataUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+                
+                if (newWindow) {
+                    document.getElementById('result').innerHTML = '<p style="color: green;">✅ SCORM content launched successfully in new window!</p>';
+                } else {
+                    document.getElementById('result').innerHTML = '<p style="color: red;">❌ Failed to open new window (popup blocked)</p>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = `<p style="color: red;">❌ Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

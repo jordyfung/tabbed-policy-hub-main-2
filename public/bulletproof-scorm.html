@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BULLETPROOF SCORM Course - Best Practice Feedback and Complaints Handling</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            color: #7f8c8d;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        .scorm-status {
+            background-color: #e8f4fd;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+        .status-item {
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+        .button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #27ae60;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        .debug-info {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            display: none;
+        }
+        .course-content {
+            margin: 30px 0;
+        }
+        .objective {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #27ae60;
+            border-radius: 4px;
+        }
+        .completion-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            border: 1px solid #c3e6cb;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Best Practice Feedback and Complaints Handling</h1>
+        
+        <div class="scorm-status">
+            <h3>SCORM Integration Status</h3>
+            <div class="status-item">
+                <strong>API Status:</strong> <span id="api-status">Checking...</span>
+            </div>
+            <div class="status-item">
+                <strong>Course Status:</strong> <span id="course-status">not attempted</span>
+            </div>
+            <div class="status-item">
+                <strong>Progress:</strong> <span id="progress-text">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-bar"></div>
+            </div>
+        </div>
+
+        <div class="course-content">
+            <h2>Course Overview</h2>
+            <p>This comprehensive course covers essential best practices for handling feedback and complaints in a professional environment. You'll learn proven techniques for managing difficult situations, resolving conflicts constructively, and implementing effective customer service strategies.</p>
+
+            <h2>Learning Objectives</h2>
+            <div class="objective">
+                <strong>Objective 1:</strong> Understand the importance of effective feedback handling and its impact on organizational success.
+            </div>
+            <div class="objective">
+                <strong>Objective 2:</strong> Learn proven techniques for managing complaints professionally and empathetically.
+            </div>
+            <div class="objective">
+                <strong>Objective 3:</strong> Develop advanced skills for resolving conflicts constructively and finding win-win solutions.
+            </div>
+            <div class="objective">
+                <strong>Objective 4:</strong> Implement best practices for customer service excellence and continuous improvement.
+            </div>
+
+            <h2>Course Content</h2>
+            <p>This interactive course will guide you through various real-world scenarios and provide practical tools for handling feedback and complaints effectively. You'll engage with case studies, participate in interactive exercises, and develop actionable strategies you can implement immediately.</p>
+
+            <h3>Key Topics Covered:</h3>
+            <ul>
+                <li>Understanding different types of feedback and complaints</li>
+                <li>Active listening and empathy techniques</li>
+                <li>De-escalation strategies for difficult situations</li>
+                <li>Documentation and follow-up procedures</li>
+                <li>Building positive relationships with stakeholders</li>
+                <li>Continuous improvement and learning from feedback</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <button class="button" id="start-button" onclick="startCourse()">Start Course</button>
+            <button class="button" id="complete-button" onclick="markComplete()" disabled>Mark Complete</button>
+            <button class="button" onclick="showDebug()">Show Debug Info</button>
+        </div>
+
+        <div class="completion-message" id="completion-message">
+            <h3>🎉 Congratulations!</h3>
+            <p>You have successfully completed the "Best Practice Feedback and Complaints Handling" course. Your progress has been recorded and you can now apply these skills in your professional environment.</p>
+        </div>
+
+        <div class="debug-info" id="debug-info">
+            <strong>SCORM Debug Information:</strong>
+            <div id="debug-content">Loading debug information...</div>
+        </div>
+    </div>
+
+    <script>
+        // BULLETPROOF SCORM 1.2 API Implementation
+        let scormAPI = null;
+        let isInitialized = false;
+        let courseStarted = false;
+        let currentProgress = 0;
+
+        // Enhanced SCORM API discovery
+        function findSCORMAPI() {
+            let attempts = 0;
+            let maxAttempts = 7;
+            let win = window;
+            
+            console.log("🔍 Starting SCORM API discovery...");
+            
+            while (win && attempts < maxAttempts) {
+                console.log("Checking window level:", attempts);
+                
+                if (win.API && typeof win.API.LMSInitialize === 'function') {
+                    console.log("✅ SCORM API found at level:", attempts);
+                    return win.API;
+                }
+                
+                if (win.parent && win.parent !== win) {
+                    win = win.parent;
+                    attempts++;
+                } else {
+                    break;
+                }
+            }
+            
+            console.warn("⚠️ SCORM API not found after", attempts, "attempts");
+            return null;
+        }
+
+        // Initialize SCORM communication
+        function initializeSCORM() {
+            console.log("🚀 Initializing SCORM...");
+            scormAPI = findSCORMAPI();
+            
+            if (scormAPI) {
+                try {
+                    const result = scormAPI.LMSInitialize('');
+                    if (result === 'true') {
+                        isInitialized = true;
+                        console.log("✅ SCORM initialized successfully");
+                        document.getElementById('api-status').textContent = 'Connected';
+                        return true;
+                    } else {
+                        console.error("❌ SCORM initialization failed:", result);
+                        document.getElementById('api-status').textContent = 'Initialization Failed';
+                        return false;
+                    }
+                } catch (error) {
+                    console.error("❌ SCORM initialization error:", error);
+                    document.getElementById('api-status').textContent = 'Error: ' + error.message;
+                    return false;
+                }
+            } else {
+                console.warn("⚠️ No SCORM API found - running in standalone mode");
+                document.getElementById('api-status').textContent = 'Standalone Mode';
+                return false;
+            }
+        }
+
+        // Start the course
+        function startCourse() {
+            if (scormAPI && isInitialized) {
+                try {
+                    scormAPI.LMSSetValue('cmi.core.lesson_status', 'incomplete');
+                    scormAPI.LMSSetValue('cmi.core.score.raw', '25');
+                    scormAPI.LMSCommit('');
+                    
+                    courseStarted = true;
+                    currentProgress = 25;
+                    updateProgress();
+                    
+                    document.getElementById('start-button').disabled = true;
+                    document.getElementById('complete-button').disabled = false;
+                    
+                    console.log("✅ Course started successfully");
+                    alert('Course started! Your progress will be tracked.');
+                } catch (error) {
+                    console.error("❌ Error starting course:", error);
+                    alert('Error starting course: ' + error.message);
+                }
+            } else {
+                // Standalone mode
+                courseStarted = true;
+                currentProgress = 25;
+                updateProgress();
+                
+                document.getElementById('start-button').disabled = true;
+                document.getElementById('complete-button').disabled = false;
+                
+                console.log("✅ Course started (standalone mode)");
+                alert('Course started! (Running in standalone mode)');
+            }
+        }
+
+        // Mark course as complete
+        function markComplete() {
+            if (scormAPI && isInitialized) {
+                try {
+                    scormAPI.LMSSetValue('cmi.core.lesson_status', 'completed');
+                    scormAPI.LMSSetValue('cmi.core.score.raw', '100');
+                    scormAPI.LMSCommit('');
+                    scormAPI.LMSFinish('');
+                    
+                    currentProgress = 100;
+                    updateProgress();
+                    
+                    document.getElementById('complete-button').disabled = true;
+                    document.getElementById('completion-message').style.display = 'block';
+                    
+                    console.log("✅ Course completed successfully");
+                    alert('Course completed successfully!');
+                } catch (error) {
+                    console.error("❌ Error completing course:", error);
+                    alert('Error completing course: ' + error.message);
+                }
+            } else {
+                // Standalone mode
+                currentProgress = 100;
+                updateProgress();
+                
+                document.getElementById('complete-button').disabled = true;
+                document.getElementById('completion-message').style.display = 'block';
+                
+                console.log("✅ Course completed (standalone mode)");
+                alert('Course completed successfully! (Standalone mode)');
+            }
+        }
+
+        // Update progress display
+        function updateProgress() {
+            document.getElementById('progress-text').textContent = currentProgress + '%';
+            document.getElementById('progress-bar').style.width = currentProgress + '%';
+            document.getElementById('course-status').textContent = 
+                currentProgress === 100 ? 'completed' : 'incomplete';
+        }
+
+        // Show debug information
+        function showDebug() {
+            const debugDiv = document.getElementById('debug-info');
+            const debugContent = document.getElementById('debug-content');
+            
+            if (debugDiv.style.display === 'none') {
+                let debugInfo = 'SCORM Debug Information:\n\n';
+                debugInfo += 'API Available: ' + (scormAPI ? 'Yes' : 'No') + '\n';
+                debugInfo += 'Initialized: ' + (isInitialized ? 'Yes' : 'No') + '\n';
+                debugInfo += 'Course Started: ' + (courseStarted ? 'Yes' : 'No') + '\n';
+                debugInfo += 'Current Progress: ' + currentProgress + '%\n\n';
+                
+                if (scormAPI) {
+                    try {
+                        debugInfo += 'Student ID: ' + scormAPI.LMSGetValue('cmi.core.student_id') + '\n';
+                        debugInfo += 'Lesson Status: ' + scormAPI.LMSGetValue('cmi.core.lesson_status') + '\n';
+                        debugInfo += 'Score Raw: ' + scormAPI.LMSGetValue('cmi.core.score.raw') + '\n';
+                        debugInfo += 'Total Time: ' + scormAPI.LMSGetValue('cmi.core.total_time') + '\n';
+                    } catch (e) {
+                        debugInfo += 'Error getting SCORM data: ' + e.message + '\n';
+                    }
+                }
+                
+                debugContent.textContent = debugInfo;
+                debugDiv.style.display = 'block';
+            } else {
+                debugDiv.style.display = 'none';
+            }
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            console.log("📚 BULLETPROOF SCORM Course page loaded");
+            
+            // Try to initialize SCORM
+            setTimeout(function() {
+                initializeSCORM();
+            }, 1000);
+        });
+
+        // Handle page unload
+        window.addEventListener('beforeunload', function() {
+            if (scormAPI && isInitialized) {
+                try {
+                    scormAPI.LMSFinish('');
+                    console.log("✅ SCORM session finished");
+                } catch (error) {
+                    console.error("❌ Error finishing SCORM session:", error);
+                }
+            }
+        });
+
+        // Make functions globally available
+        window.startCourse = startCourse;
+        window.markComplete = markComplete;
+        window.showDebug = showDebug;
+    </script>
+</body>
+</html>
+

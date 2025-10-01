@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<!-- Copyright 2003-2022 Rustici Software, LLC All Rights Reserved. Rustici-Engine 22.1.1 2023-10-23T17:45:58+0000 4b75ad1 -->
+<html>
+<head>
+<base href="http://prpfrwqqsxqsikehzosd.supabase.co/functions/v1/scorm-proxy?path=content%2Fff9f90c0-1109-4613-9ff8-c0317f1bf295%2F">
+
+<script>(function(){
+  const isCspMeta = (el)=>{
+    try{
+      const n = el && el.getAttribute && el.getAttribute('http-equiv');
+      return n && n.toLowerCase() === 'content-security-policy';
+    }catch(e){}
+    return false;
+  };
+  const origAppend = Element.prototype.appendChild;
+  Element.prototype.appendChild = function(child){
+    if(child && child.tagName === 'META' && isCspMeta(child)){
+      console.warn('Blocked CSP meta append');
+      return child;
+    }
+    return origAppend.call(this, child);
+  };
+  const origInsertBefore = Element.prototype.insertBefore;
+  Element.prototype.insertBefore = function(newNode, ref){
+    if(newNode && newNode.tagName === 'META' && isCspMeta(newNode)){
+      console.warn('Blocked CSP meta insertBefore');
+      return newNode;
+    }
+    return origInsertBefore.call(this, newNode, ref);
+  };
+  const origSetAttribute = Element.prototype.setAttribute;
+  Element.prototype.setAttribute = function(name, value){
+    if(this && this.tagName === 'META' && name && name.toLowerCase() === 'http-equiv' && String(value).toLowerCase() === 'content-security-policy'){
+      console.warn('Blocked CSP meta setAttribute');
+      return;
+    }
+    return origSetAttribute.call(this, name, value);
+  };
+  const origWrite = document.write;
+  document.write = function(){
+    try{
+      const str = arguments && arguments[0];
+      if(typeof str === 'string' && /http-equiv\s*=\s*["']?content-security-policy["']?/i.test(str)){
+        console.warn('Blocked CSP meta via document.write');
+        return;
+      }
+    }catch(e){}
+    return origWrite.apply(this, arguments);
+  };
+})();</script>
+
+<script>(function(){
+  try {
+    if (!window.API) {
+      var __cmi = {};
+      var __initialized = false;
+      var __lastError = "0";
+      function LMSInitialize(){ __initialized = true; __lastError = "0"; return "true"; }
+      function LMSFinish(){ try { LMSCommit(""); } catch(e) {} __initialized = false; return "true"; }
+      function LMSGetValue(k){ if(!__initialized){ __lastError = "301"; return ""; } __lastError = "0"; return (__cmi[k] != null ? String(__cmi[k]) : ""); }
+      function LMSSetValue(k,v){ if(!__initialized){ __lastError = "301"; return "false"; } __cmi[k] = String(v); __lastError = "0"; return "true"; }
+      function LMSCommit(){ if(!__initialized){ __lastError = "301"; return "false"; } __lastError = "0"; return "true"; }
+      function LMSGetLastError(){ return __lastError; }
+      function LMSGetErrorString(){ return ""; }
+      function LMSGetDiagnostic(){ return ""; }
+      window.API = {
+        LMSInitialize: LMSInitialize,
+        LMSFinish: LMSFinish,
+        LMSGetValue: LMSGetValue,
+        LMSSetValue: LMSSetValue,
+        LMSCommit: LMSCommit,
+        LMSGetLastError: LMSGetLastError,
+        LMSGetErrorString: LMSGetErrorString,
+        LMSGetDiagnostic: LMSGetDiagnostic
+      };
+    }
+  } catch (e) {
+    console.warn('SCORM API shim error', e);
+  }
+})();</script>
+
+    <title>Rustici Software Dispatch</title>
+    <script src="configuration.js?cache=4b75ad1"></script>
+    <script src="utils.js?cache=4b75ad1"></script>
+    <script>
+        var today = new Date().toISOString().slice(0, 10);
+
+        if (window.location.protocol === "https:") {
+            DispatchRoot = DispatchRoot.replace("http:", "https:");
+        }
+        else {
+            DispatchRoot = DispatchRoot.replace("https:", "http:");
+        }
+
+        include_script("scormdriver.js?cache=4b75ad1-" + today);
+        include_script("dispatch.client.loader.js?cache=4b75ad1-" + today);
+
+        function DispatchStart () {
+            if (typeof Start !== "undefined" && typeof LoadContent !== "undefined") {
+                strLMSStandard = "SCORM";
+
+                if (typeof ShowDebugWindow !== "undefined" && typeof DebugMode !== "undefined" && DebugMode) {
+                    ShowDebugWindow();
+                }
+
+                Start();
+                return;
+            }
+
+            setTimeout("DispatchStart()", 500);
+        }
+
+        function DispatchUnload () {
+            WriteToDebug("In DispatchUnload");
+
+            WriteToDebug("Unloading from DispatchUnload");
+            Unload();
+            WriteToDebug("Unloaded from DispatchUnload");
+        }
+    </script>
+    <style>
+        html {
+            height: 100%;
+            overflow-y: hidden;
+        }
+        iframe, body {
+            height: 100%;
+            width: 100%;
+            border: none;
+            margin: 0px;
+        }
+    </style>
+</head>
+
+<body onload="DispatchStart()" onunload="DispatchUnload()">
+    <div id="dispatch_content_frame" style="width: 100%; height: 100%; display: none;">
+        <div style="padding: 20px; font-family: Arial, sans-serif;">
+            <h1>Loading SCORM Course...</h1>
+            <p>Please wait while the course content loads.</p>
+        </div>
+    </div>
+    <div id="dispatch_loading_frame" style="width: 100%; height: 100%; display: block;">
+        <div style="padding: 20px; font-family: Arial, sans-serif; text-align: center;">
+            <h1>SCORM Course Loading</h1>
+            <p>Initializing course content...</p>
+        </div>
+    </div>
+</body>
+
+</html>

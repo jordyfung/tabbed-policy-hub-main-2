@@ -59,6 +59,62 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Supabase (Database & Auth)
+- Notion API (Content Source)
+- OpenAI API (AI Responses)
+
+## RAG (Retrieval-Augmented Generation) System
+
+This application includes an AI-powered compliance assistant that uses Retrieval-Augmented Generation to provide accurate answers based on your organization's policy documents stored in Notion.
+
+### Features
+
+- **Intelligent Q&A**: Ask questions about policies and get contextually relevant answers
+- **Source Citations**: Every AI response includes references to the original policy documents
+- **Real-time Sync**: Automatically sync policy updates from Notion
+- **Admin Management**: Easy-to-use interface for managing the knowledge base
+- **Performance Monitoring**: Track system usage and response quality
+
+### Setup Instructions
+
+1. **Environment Variables**:
+   ```bash
+   # Copy the environment template
+   cp env-example.txt .env.local
+
+   # Edit .env.local with your actual values
+   ```
+
+2. **Notion Integration**:
+   - Create a Notion integration at [developers.notion.com](https://developers.notion.com/)
+   - Share your policy database with the integration
+   - Copy the integration token and database ID to your environment variables
+
+3. **Database Setup**:
+   ```bash
+   # The RAG system migration should run automatically
+   # If needed, you can run migrations manually:
+   npx supabase db push
+   ```
+
+4. **Initial Sync**:
+   - Go to Dashboard → RAG Management → Data Sync
+   - Click "Sync Now" to import your Notion policies
+   - Test the system using the "System Test" tab
+
+### Usage
+
+- **For Users**: Use the "AI Assistant" tab in the Policies section to ask questions
+- **For Admins**: Use Dashboard → RAG Management to sync data and monitor performance
+- **For Testing**: Use the system tester to validate responses and fine-tune the AI
+
+### Architecture
+
+```
+Notion Database → NotionExtractor → Supabase (pgvector) → RAG Service → Chat Interface
+```
+
+The system uses OpenAI's embeddings to create vector representations of policy content, enabling semantic search and contextually relevant AI responses.
 
 ## How can I deploy this project?
 

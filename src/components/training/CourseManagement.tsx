@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Plus, Edit, Trash2, BookOpen, Clock, Users, Star, Upload, Play } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import ScormUpload from './ScormUpload';
 import ScormPlayer from './ScormPlayer';
@@ -211,6 +211,9 @@ export default function CourseManagement() {
             <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>{editingCourse ? 'Edit Course' : 'Create New Course'}</DialogTitle>
+                <DialogDescription>
+                  {editingCourse ? 'Update the course details and content.' : 'Create a new training course with content and settings.'}
+                </DialogDescription>
               </DialogHeader>
               {editingCourse?.course_type === 'scorm' && (
                 <div className="p-4 bg-muted/50 rounded-lg">
@@ -377,6 +380,9 @@ export default function CourseManagement() {
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Upload SCORM Package</DialogTitle>
+            <DialogDescription>
+              Upload a SCORM package to create an interactive training course. The package will be processed and made available for training.
+            </DialogDescription>
           </DialogHeader>
           <ScormUpload
             onUploadComplete={(courseId) => {
@@ -396,18 +402,21 @@ export default function CourseManagement() {
       {playingCourse && (
         <Dialog 
           open={!!playingCourse} 
-          onOpenChange={() => setPlayingCourse(null)}
+          onOpenChange={(isOpen) => !isOpen && setPlayingCourse(null)}
         >
-          <DialogContent className="max-w-[90vw] max-h-[90vh] w-full h-full">
-            <DialogHeader>
-              <DialogTitle>
-                <VisuallyHidden>SCORM Course Player</VisuallyHidden>
-              </DialogTitle>
+          <DialogContent className="max-w-[95vw] w-[95vw] h-[95vh] flex flex-col p-0">
+            <DialogHeader className="p-4 border-b">
+              <DialogTitle>{playingCourse.title}</DialogTitle>
+              <DialogDescription>
+                SCORM 1.2 Course Player
+              </DialogDescription>
             </DialogHeader>
-            <ScormPlayer
-              manifestUrl={`/scorm_packages/${playingCourse.scorm_package_path}/${playingCourse.scorm_entry_point}`}
-              scormCourseId={playingCourse.id}
-            />
+            <div className="flex-grow">
+              <ScormPlayer
+                manifestUrl={`${import.meta.env.VITE_SUPABASE_URL || 'https://prpfrwqqsxqsikehzosd.supabase.co'}/functions/v1/scorm-proxy?path=${playingCourse.scorm_package_path}/${playingCourse.scorm_entry_point}`}
+                scormCourseId={playingCourse.id}
+              />
+            </div>
           </DialogContent>
         </Dialog>
       )}

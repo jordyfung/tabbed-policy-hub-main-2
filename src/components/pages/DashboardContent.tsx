@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { BarChart3, TrendingUp, Users, FileCheck, Shield, UserCheck, AlertTriangle, Clock } from 'lucide-react';
 import AnalyticsContent from './dashboard/AnalyticsContent';
@@ -6,12 +7,14 @@ import ReportsContent from './dashboard/ReportsContent';
 import TeamContent from './dashboard/TeamContent';
 import QualityStandardsContent from './dashboard/QualityStandardsContent';
 import PermissionsContent from './dashboard/PermissionsContent';
+import RagManagementContent from './dashboard/RagManagementContent';
 
 interface DashboardContentProps {
   activeSubTab?: string;
 }
 
 export default function DashboardContent({ activeSubTab = 'overview' }: DashboardContentProps) {
+  const { t } = useTranslation();
   // Render content based on active sub-tab
   if (activeSubTab === 'analytics') {
     return <AnalyticsContent />;
@@ -32,30 +35,34 @@ export default function DashboardContent({ activeSubTab = 'overview' }: Dashboar
   if (activeSubTab === 'permissions') {
     return <PermissionsContent />;
   }
+
+  if (activeSubTab === 'rag-management') {
+    return <RagManagementContent />;
+  }
   const stats = [
     {
-      title: 'ACQSC Compliance',
+      title: t('dashboard.stats.acqscCompliance'),
       value: '92%',
       change: '+4%',
       icon: Shield,
       color: 'success'
     },
     {
-      title: 'Quality Standards Met',
+      title: t('dashboard.stats.qualityStandardsMet'),
       value: '6/8',
       change: '+1',
       icon: UserCheck,
       color: 'success'
     },
     {
-      title: 'Staff Compliance',
+      title: t('dashboard.stats.staffCompliance'),
       value: '91%',
       change: '+3%',
       icon: Users,
       color: 'info'
     },
     {
-      title: 'Open Findings',
+      title: t('dashboard.stats.openFindings'),
       value: '4',
       change: '-2',
       icon: AlertTriangle,
@@ -66,8 +73,8 @@ export default function DashboardContent({ activeSubTab = 'overview' }: Dashboar
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Aged Care Dashboard</h1>
-        <p className="text-foreground/60 mt-2">Monitor Quality Standards compliance and aged care performance</p>
+        <h1 className="text-3xl font-bold text-foreground">{t('dashboard.title')}</h1>
+        <p className="text-foreground/60 mt-2">{t('dashboard.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -86,7 +93,7 @@ export default function DashboardContent({ activeSubTab = 'overview' }: Dashboar
                 <div>
                   <p className="text-sm font-medium text-foreground/60">{stat.title}</p>
                   <p className="text-2xl font-bold text-foreground mt-2">{stat.value}</p>
-                  <p className="text-sm text-success mt-1">{stat.change} from last month</p>
+                  <p className="text-sm text-success mt-1">{stat.change} {t('dashboard.stats.fromLastMonth')}</p>
                 </div>
                 <div className={`p-3 rounded-lg ${colorClass}`}>
                   <Icon className="h-6 w-6" />
@@ -99,7 +106,7 @@ export default function DashboardContent({ activeSubTab = 'overview' }: Dashboar
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Recent Activity</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4">{t('dashboard.recentActivity')}</h3>
           <div className="space-y-4">
             {[
               { action: 'Care plan updated', item: 'Quality Standard 3 compliance', time: '1 hour ago', color: 'success' },
@@ -120,7 +127,7 @@ export default function DashboardContent({ activeSubTab = 'overview' }: Dashboar
         </Card>
 
         <Card className="p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Upcoming Tasks</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4">{t('dashboard.upcomingTasks')}</h3>
           <div className="space-y-4">
             {[
               { task: 'Update care plans for new residents', due: 'Due in 1 day', priority: 'high' },

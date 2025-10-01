@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple SCORM Course</title>
+    <meta charset="utf-8">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        .course-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .course-title {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .course-content {
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+        .scorm-status {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .button {
+            background: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .button:hover { background: #2980b9; }
+        .button.complete { background: #27ae60; }
+        .button.complete:hover { background: #229954; }
+        .debug-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="course-container">
+        <h1 class="course-title">Best Practice Feedback and Complaints Handling</h1>
+        
+        <div class="scorm-status">
+            <h3>SCORM Status</h3>
+            <p><strong>API Status:</strong> <span id="api-status">Checking...</span></p>
+            <p><strong>Course Status:</strong> <span id="course-status">Not Started</span></p>
+            <p><strong>Progress:</strong> <span id="progress">0%</span></p>
+        </div>
+        
+        <div class="course-content">
+            <h2>Course Overview</h2>
+            <p>This course covers best practices for handling feedback and complaints in a professional environment.</p>
+            
+            <h3>Learning Objectives</h3>
+            <ul>
+                <li>Understand the importance of effective feedback handling</li>
+                <li>Learn techniques for managing complaints professionally</li>
+                <li>Develop skills for resolving conflicts constructively</li>
+                <li>Implement best practices for customer service</li>
+            </ul>
+            
+            <h3>Course Content</h3>
+            <p>This interactive course will guide you through various scenarios and provide practical tools for handling feedback and complaints effectively.</p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <button class="button" onclick="startCourse()">Start Course</button>
+            <button class="button complete" onclick="markComplete()">Mark Complete</button>
+            <button class="button" onclick="showDebug()">Show Debug Info</button>
+        </div>
+        
+        <div id="debug-info" class="debug-info" style="display: none;">
+            <h4>Debug Information</h4>
+            <div id="debug-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // SCORM API Implementation
+        let scormInitialized = false;
+        let courseData = {
+            'cmi.core.student_id': 'test_student',
+            'cmi.core.student_name': 'Test Student',
+            'cmi.core.lesson_status': 'not attempted',
+            'cmi.core.score.raw': '0',
+            'cmi.core.total_time': '00:00:00'
+        };
+
+        function LMSInitialize(param) {
+            console.log('LMSInitialize called with:', param);
+            scormInitialized = true;
+            updateStatus();
+            return "true";
+        }
+
+        function LMSFinish(param) {
+            console.log('LMSFinish called with:', param);
+            if (scormInitialized) {
+                LMSCommit("");
+            }
+            return "true";
+        }
+
+        function LMSGetValue(element) {
+            console.log('LMSGetValue called for:', element);
+            if (!scormInitialized) return "";
+            return courseData[element] || "";
+        }
+
+        function LMSSetValue(element, value) {
+            console.log('LMSSetValue called:', element, '=', value);
+            if (!scormInitialized) return "false";
+            courseData[element] = value;
+            return "true";
+        }
+
+        function LMSCommit(param) {
+            console.log('LMSCommit called with:', param);
+            if (!scormInitialized) return "false";
+            // In a real implementation, this would save to the LMS
+            console.log('Course data saved:', courseData);
+            return "true";
+        }
+
+        function LMSGetLastError() {
+            return "0";
+        }
+
+        function LMSGetErrorString(errorCode) {
+            return "";
+        }
+
+        function LMSGetDiagnostic(errorCode) {
+            return "";
+        }
+
+        // Expose SCORM API
+        window.API = {
+            LMSInitialize: LMSInitialize,
+            LMSFinish: LMSFinish,
+            LMSGetValue: LMSGetValue,
+            LMSSetValue: LMSSetValue,
+            LMSCommit: LMSCommit,
+            LMSGetLastError: LMSGetLastError,
+            LMSGetErrorString: LMSGetErrorString,
+            LMSGetDiagnostic: LMSGetDiagnostic
+        };
+
+        function updateStatus() {
+            document.getElementById('api-status').textContent = scormInitialized ? 'Connected' : 'Disconnected';
+            document.getElementById('course-status').textContent = courseData['cmi.core.lesson_status'] || 'Not Started';
+            document.getElementById('progress').textContent = courseData['cmi.core.score.raw'] + '%';
+        }
+
+        function startCourse() {
+            if (scormInitialized) {
+                LMSSetValue('cmi.core.lesson_status', 'in progress');
+                LMSSetValue('cmi.core.score.raw', '25');
+                updateStatus();
+                alert('Course started! SCORM data updated.');
+            } else {
+                alert('SCORM API not initialized. Please refresh the page.');
+            }
+        }
+
+        function markComplete() {
+            if (scormInitialized) {
+                LMSSetValue('cmi.core.lesson_status', 'completed');
+                LMSSetValue('cmi.core.score.raw', '100');
+                updateStatus();
+                alert('Course completed! SCORM data saved.');
+            } else {
+                alert('SCORM API not initialized. Please refresh the page.');
+            }
+        }
+
+        function showDebug() {
+            const debugDiv = document.getElementById('debug-info');
+            const debugContent = document.getElementById('debug-content');
+            
+            debugContent.innerHTML = `
+                <p><strong>SCORM API Status:</strong> ${scormInitialized ? 'Initialized' : 'Not Initialized'}</p>
+                <p><strong>Current Data:</strong></p>
+                <pre>${JSON.stringify(courseData, null, 2)}</pre>
+                <p><strong>Available API Methods:</strong> ${Object.keys(window.API).join(', ')}</p>
+            `;
+            
+            debugDiv.style.display = debugDiv.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Initialize SCORM API when page loads
+        window.onload = function() {
+            console.log('Page loaded, initializing SCORM API...');
+            LMSInitialize('');
+            updateStatus();
+        };
+    </script>
+</body>
+</html>
+

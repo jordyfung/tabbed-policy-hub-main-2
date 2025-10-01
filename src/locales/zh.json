@@ -1,0 +1,130 @@
+{
+  "app": {
+    "name": "OriComply"
+  },
+  "nav": {
+    "dashboard": "仪表板",
+    "newsfeed": "新闻资讯",
+    "policies": "政策",
+    "training": "培训",
+    "assurance": "保障",
+    "announcements": "公告",
+    "viewMode": "查看模式",
+    "admin": "管理员",
+    "staff": "员工"
+  },
+  "dashboard": {
+    "title": "老年护理仪表板",
+    "subtitle": "监控质量标准合规性和老年护理绩效",
+    "overview": "概览",
+    "standards": "质量标准",
+    "analytics": "分析",
+    "reports": "报告",
+    "team": "团队",
+    "permissions": "权限",
+    "ragManagement": "RAG管理",
+    "stats": {
+      "acqscCompliance": "ACQSC合规性",
+      "qualityStandardsMet": "符合的质量标准",
+      "staffCompliance": "员工合规性",
+      "openFindings": "未解决发现",
+      "fromLastMonth": "比上个月"
+    },
+    "recentActivity": "最近活动",
+    "upcomingTasks": "即将到来的任务"
+  },
+  "userProfile": {
+    "viewProfile": "查看资料",
+    "updatePhoto": "更新照片",
+    "accountSettings": "账户设置",
+    "signOut": "退出登录",
+    "superAdmin": "超级管理员",
+    "admin": "管理员",
+    "staffView": "员工视图"
+  },
+  "accountSettings": {
+    "title": "账户设置",
+    "description": "管理您的账户偏好设置和通知设置。",
+    "notifications": "通知",
+    "emailNotifications": "邮件通知",
+    "emailNotificationsDesc": "通过邮件接收通知",
+    "pushNotifications": "推送通知",
+    "pushNotificationsDesc": "在浏览器中接收推送通知",
+    "trainingReminders": "培训提醒",
+    "trainingRemindersDesc": "获取即将到来的培训提醒",
+    "complianceAlerts": "合规警报",
+    "complianceAlertsDesc": "接收重要的合规更新",
+    "appearance": "外观",
+    "theme": "主题",
+    "language": "语言",
+    "cancel": "取消",
+    "saveSettings": "保存设置",
+    "saving": "保存中..."
+  },
+  "languages": {
+    "en": "英语",
+    "zh": "中文",
+    "es": "西班牙语",
+    "fr": "法语"
+  },
+  "themes": {
+    "light": "浅色",
+    "dark": "深色",
+    "system": "系统"
+  },
+  "trainingProfile": {
+    "titleAdmin": "员工培训档案",
+    "titleSelf": "我的培训档案",
+    "subtitleAdmin": "查看个人员工的培训进度和历史",
+    "subtitleSelf": "跟踪您的培训进度与成就",
+    "timeAtCompany": "在职时间",
+    "trainingProgress": "培训进度",
+    "totalXP": "总经验值",
+    "currentAssignments": "当前任务",
+    "upcomingDeadlines": "即将到期",
+    "emptyState": "未找到培训任务。",
+    "mandatoryCompliance": "必修合规",
+    "labels": {
+      "due": "到期",
+      "lastCompleted": "上次完成"
+    },
+    "badges": {
+      "mandatory": "必修",
+      "completed": "已完成",
+      "overdue": "已逾期",
+      "dueSoon": "即将到期",
+      "pending": "待开始"
+    },
+    "actions": {
+      "continue": "继续培训",
+      "start": "开始",
+      "viewDetails": "查看详情",
+      "markDone": "标记完成"
+    },
+    "tooltips": {
+      "mandatory": "此课程为必修",
+      "completed": "您已完成此任务",
+      "overdue": "此任务已超过到期日",
+      "dueSoon": "此任务将于一周内到期",
+      "pending": "任务尚未开始",
+      "progress": "整体培训完成度",
+      "totalXp": "累计获得的经验值",
+      "timeAtCompany": "自账户创建以来的时间"
+    },
+    "toasts": {
+      "markedDone": "已标记为完成（演示）",
+      "start": "正在打开课程（演示）",
+      "viewDetails": "正在打开详情（演示）"
+    }
+  },
+  "time": {
+    "day_one": "{{count}} 天",
+    "day_other": "{{count}} 天",
+    "month_one": "{{count}} 个月",
+    "month_other": "{{count}} 个月",
+    "year_one": "{{count}} 年",
+    "year_other": "{{count}} 年"
+  }
+}
+
+

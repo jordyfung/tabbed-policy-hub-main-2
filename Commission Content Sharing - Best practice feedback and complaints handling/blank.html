@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SCORM Course Content</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .content {
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .scorm-info {
+            background-color: #e8f4fd;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 14px;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+        .status {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            border: 1px solid #c3e6cb;
+        }
+        .debug {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Best Practice Feedback and Complaints Handling</h1>
+        
+        <div class="content">
+            <p>Welcome to the SCORM course on <strong>Best Practice Feedback and Complaints Handling</strong>.</p>
+            
+            <p>This course covers essential topics including:</p>
+            <ul>
+                <li>Understanding feedback mechanisms</li>
+                <li>Handling complaints effectively</li>
+                <li>Best practices for resolution</li>
+                <li>Documentation and follow-up</li>
+            </ul>
+        </div>
+
+        <div class="scorm-info">
+            <h3>SCORM Integration Status</h3>
+            <div id="scorm-status">Checking SCORM API connection...</div>
+            <div id="scorm-debug" class="debug" style="display: none;"></div>
+        </div>
+
+        <div class="status">
+            <strong>Course Status:</strong> <span id="course-status">Not Started</span>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="button" onclick="startCourse()">Start Course</button>
+            <button class="button" onclick="markComplete()">Mark Complete</button>
+            <button class="button" onclick="showDebug()">Show Debug Info</button>
+        </div>
+    </div>
+
+    <script>
+        // SCORM API Integration
+        let scormAPI = null;
+        let courseStarted = false;
+
+        // Find SCORM API
+        function findSCORMAPI() {
+            if (window.parent && window.parent.API) {
+                scormAPI = window.parent.API;
+                return true;
+            }
+            if (window.top && window.top.API) {
+                scormAPI = window.top.API;
+                return true;
+            }
+            return false;
+        }
+
+        // Initialize SCORM
+        function initializeSCORM() {
+            if (findSCORMAPI()) {
+                try {
+                    const result = scormAPI.LMSInitialize('');
+                    if (result === 'true') {
+                        document.getElementById('scorm-status').innerHTML = '✅ SCORM API Connected Successfully';
+                        return true;
+                    } else {
+                        document.getElementById('scorm-status').innerHTML = '❌ SCORM API Initialize Failed';
+                        return false;
+                    }
+                } catch (error) {
+                    document.getElementById('scorm-status').innerHTML = '❌ SCORM API Error: ' + error.message;
+                    return false;
+                }
+            } else {
+                document.getElementById('scorm-status').innerHTML = '❌ SCORM API Not Found';
+                return false;
+            }
+        }
+
+        // Start course
+        function startCourse() {
+            if (scormAPI) {
+                try {
+                    scormAPI.LMSSetValue('cmi.core.lesson_status', 'incomplete');
+                    scormAPI.LMSCommit('');
+                    document.getElementById('course-status').textContent = 'In Progress';
+                    courseStarted = true;
+                    alert('Course started! Your progress will be tracked.');
+                } catch (error) {
+                    alert('Error starting course: ' + error.message);
+                }
+            } else {
+                alert('SCORM API not available');
+            }
+        }
+
+        // Mark course complete
+        function markComplete() {
+            if (scormAPI) {
+                try {
+                    scormAPI.LMSSetValue('cmi.core.lesson_status', 'completed');
+                    scormAPI.LMSCommit('');
+                    document.getElementById('course-status').textContent = 'Completed';
+                    alert('Course completed successfully!');
+                } catch (error) {
+                    alert('Error completing course: ' + error.message);
+                }
+            } else {
+                alert('SCORM API not available');
+            }
+        }
+
+        // Show debug information
+        function showDebug() {
+            const debugDiv = document.getElementById('scorm-debug');
+            if (debugDiv.style.display === 'none') {
+                let debugInfo = 'SCORM Debug Information:\n\n';
+                debugInfo += 'API Available: ' + (scormAPI ? 'Yes' : 'No') + '\n';
+                debugInfo += 'Window Parent: ' + (window.parent ? 'Yes' : 'No') + '\n';
+                debugInfo += 'Window Top: ' + (window.top ? 'Yes' : 'No') + '\n';
+                
+                if (scormAPI) {
+                    try {
+                        debugInfo += 'Student ID: ' + scormAPI.LMSGetValue('cmi.core.student_id') + '\n';
+                        debugInfo += 'Lesson Status: ' + scormAPI.LMSGetValue('cmi.core.lesson_status') + '\n';
+                    } catch (e) {
+                        debugInfo += 'Error getting SCORM data: ' + e.message + '\n';
+                    }
+                }
+                
+                debugDiv.textContent = debugInfo;
+                debugDiv.style.display = 'block';
+            } else {
+                debugDiv.style.display = 'none';
+            }
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                initializeSCORM();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

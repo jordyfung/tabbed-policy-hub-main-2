@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SCORM Test Page</title>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-button { 
+            background: #007bff; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 16px;
+            margin: 10px;
+        }
+        .test-button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>SCORM Test Page</h1>
+    <p>This page tests if the SCORM content loads properly.</p>
+    
+    <button class="test-button" onclick="testScormContent()">Test SCORM Content</button>
+    <button class="test-button" onclick="testDirectNavigation()">Test Direct Navigation</button>
+    
+    <div id="result" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc; background: #f9f9f9;"></div>
+    
+    <script>
+        function testScormContent() {
+            document.getElementById('result').innerHTML = '<h3>Testing SCORM Content...</h3><p>Loading SCORM content in iframe...</p>';
+            
+            const iframe = document.createElement('iframe');
+            iframe.src = '/scorm-content.html';
+            iframe.style.width = '100%';
+            iframe.style.height = '600px';
+            iframe.style.border = '1px solid #ccc';
+            
+            iframe.onload = function() {
+                document.getElementById('result').innerHTML = '<h3>✅ SCORM Content Loaded Successfully!</h3><p>The SCORM content is now displayed below:</p>';
+            };
+            
+            iframe.onerror = function() {
+                document.getElementById('result').innerHTML = '<h3>❌ Error Loading SCORM Content</h3><p>There was an error loading the SCORM content.</p>';
+            };
+            
+            document.getElementById('result').appendChild(iframe);
+        }
+        
+        function testDirectNavigation() {
+            window.location.href = '/scorm-content.html';
+        }
+    </script>
+</body>
+</html>
+

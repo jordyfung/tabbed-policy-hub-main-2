@@ -48,14 +48,16 @@ Deno.serve(async (req) => {
     console.log(`Extracted ${allFiles.length} files from ZIP`)
     console.log('Files in package:', allFiles)
 
-    // Find and parse the manifest file
-    const manifestFile = zip.files['imsmanifest.xml']
-    if (!manifestFile) {
+    // Find manifest anywhere in the zip (handles top-level folder zips)
+    const manifestKey = Object.keys(zip.files).find(k => k.toLowerCase().endsWith('imsmanifest.xml'))
+    if (!manifestKey) {
       throw new Error('imsmanifest.xml not found in SCORM package')
     }
 
+    const manifestFile = zip.files[manifestKey]
     const manifestContent = await manifestFile.async('text')
-    const manifest = parseScormManifest(manifestContent)
+    const manifestDir = manifestKey.includes('/') ? manifestKey.substring(0, manifestKey.lastIndexOf('/') + 1) : ''
+    const manifest = parseScormManifest(manifestContent, manifestDir)
 
     console.log('Parsed manifest:', manifest)
 
@@ -94,27 +96,29 @@ Deno.serve(async (req) => {
     await Promise.all(uploadPromises.filter(p => p !== null))
     console.log('All files uploaded successfully')
 
-    // Update course record with SCORM metadata
-    const { error: updateError } = await supabase
+    // Upsert course record with SCORM metadata (create if not exists)
+    const { error: upsertError } = await supabase
       .from('courses')
-      .update({
+      .upsert({
+        id: courseId,
         course_type: 'scorm',
-        scorm_package_path: `content/${courseId}/`,
+        // store without trailing slash to avoid double slashes when constructing URLs
+        scorm_package_path: `content/${courseId}`,
         scorm_manifest_data: {
           title: manifest.title,
           description: manifest.description,
           duration: manifest.duration,
           version: manifest.version
         },
-        scorm_entry_point: manifest.entryPoint,
+        // ensure no leading slash on entry point
+        scorm_entry_point: manifest.entryPoint.replace(/^\/+/, ''),
         title: manifest.title,
         description: manifest.description || ''
-      })
-      .eq('id', courseId)
+      }, { onConflict: 'id' })
 
-    if (updateError) {
-      console.error('Update error:', updateError)
-      throw new Error(`Failed to update course: ${updateError.message}`)
+    if (upsertError) {
+      console.error('Upsert error:', upsertError)
+      throw new Error(`Failed to upsert course: ${upsertError.message}`)
     }
 
     console.log('Course updated successfully')
@@ -146,7 +150,7 @@ Deno.serve(async (req) => {
   }
 })
 
-function parseScormManifest(manifestXml: string): ScormManifest {
+function parseScormManifest(manifestXml: string, baseDir: string = ''): ScormManifest {
   // Enhanced XML parsing for SCORM manifest with multiple title sources
   
   // Try organization title first (most descriptive)
@@ -175,11 +179,17 @@ function parseScormManifest(manifestXml: string): ScormManifest {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
   
+  // resolve entry point relative to manifest directory
+  const entry = hrefMatch?.[1] || 'index.html'
+  const resolvedEntry = (baseDir ? `${baseDir}${entry}` : entry)
+    .replace(/\\+/g, '/')
+    .replace(/\/\/+/, '/')
+
   return {
     title: cleanTitle,
     description: descMatch?.[1]?.trim(),
     duration: durationMatch?.[1]?.trim(),
-    entryPoint: hrefMatch?.[1] || 'index.html',
+    entryPoint: resolvedEntry,
     version: '1.2'
   }
 }

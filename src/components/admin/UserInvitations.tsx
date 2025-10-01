@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Trash2, Send, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 interface Invitation {
   id: string;
@@ -167,6 +167,9 @@ export default function UserInvitations() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Invite New Staff Member</DialogTitle>
+              <DialogDescription>
+                Send an invitation to a new staff member. They will receive an email with instructions to join.
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>

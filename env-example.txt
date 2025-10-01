@@ -1,0 +1,23 @@
+# RAG System Environment Variables
+# Copy this file to .env.local and fill in your actual values
+
+# Notion API Configuration
+# Get your API key from: https://developers.notion.com/
+NOTION_API_KEY=your_notion_integration_token_here
+
+# Your Notion database ID (found in the URL of your database)
+# Format: https://www.notion.so/your-workspace/database-id?v=...
+NOTION_DATABASE_ID=your_database_id_here
+
+# OpenAI API Configuration
+# Get your API key from: https://platform.openai.com/api-keys
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Supabase Configuration
+# Your Supabase project URL and anonymous key
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Optional: Enable debug logging for RAG system
+RAG_DEBUG=false
+

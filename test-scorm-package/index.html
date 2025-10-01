@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test SCORM Course</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .content {
+            margin: 20px 0;
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test SCORM Course</h1>
+        <div class="content">
+            <p>This is a test SCORM course to verify that the SCORM integration is working correctly.</p>
+            <p>Click the buttons below to test SCORM API functionality:</p>
+            
+            <button class="button" onclick="testInitialize()">Test Initialize</button>
+            <button class="button" onclick="testSetValue()">Test Set Value</button>
+            <button class="button" onclick="testGetValue()">Test Get Value</button>
+            <button class="button" onclick="testCommit()">Test Commit</button>
+            <button class="button" onclick="testFinish()">Test Finish</button>
+            
+            <div id="status" class="status">
+                <strong>Status:</strong> <span id="statusText">Ready</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple SCORM API implementation for testing
+        let initialized = false;
+        let cmiData = {};
+
+        function testInitialize() {
+            if (window.API && window.API.LMSInitialize) {
+                const result = window.API.LMSInitialize('');
+                document.getElementById('statusText').textContent = `Initialize: ${result}`;
+                if (result === 'true') {
+                    initialized = true;
+                }
+            } else {
+                document.getElementById('statusText').textContent = 'SCORM API not available';
+            }
+        }
+
+        function testSetValue() {
+            if (window.API && window.API.LMSSetValue) {
+                const result = window.API.LMSSetValue('cmi.core.lesson_status', 'incomplete');
+                document.getElementById('statusText').textContent = `Set Value: ${result}`;
+            } else {
+                document.getElementById('statusText').textContent = 'SCORM API not available';
+            }
+        }
+
+        function testGetValue() {
+            if (window.API && window.API.LMSGetValue) {
+                const result = window.API.LMSGetValue('cmi.core.lesson_status');
+                document.getElementById('statusText').textContent = `Get Value: ${result}`;
+            } else {
+                document.getElementById('statusText').textContent = 'SCORM API not available';
+            }
+        }
+
+        function testCommit() {
+            if (window.API && window.API.LMSCommit) {
+                const result = window.API.LMSCommit('');
+                document.getElementById('statusText').textContent = `Commit: ${result}`;
+            } else {
+                document.getElementById('statusText').textContent = 'SCORM API not available';
+            }
+        }
+
+        function testFinish() {
+            if (window.API && window.API.LMSFinish) {
+                const result = window.API.LMSFinish('');
+                document.getElementById('statusText').textContent = `Finish: ${result}`;
+                initialized = false;
+            } else {
+                document.getElementById('statusText').textContent = 'SCORM API not available';
+            }
+        }
+
+        // Check if SCORM API is available
+        window.addEventListener('load', function() {
+            if (window.API) {
+                document.getElementById('statusText').textContent = 'SCORM API available - Ready to test';
+            } else {
+                document.getElementById('statusText').textContent = 'SCORM API not found - Check console for errors';
+            }
+        });
+    </script>
+</body>
+</html>

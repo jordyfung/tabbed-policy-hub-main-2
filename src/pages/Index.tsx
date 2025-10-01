@@ -13,7 +13,7 @@ type Tab = 'dashboard' | 'newsfeed' | 'policies' | 'training' | 'assurance' | 'a
 
 // Tab visibility configuration - set to false to hide tabs without deleting code
 const tabVisibility: Record<Tab, boolean> = {
-  dashboard: false,
+  dashboard: true,
   newsfeed: false,
   policies: true,
   training: true,
@@ -25,6 +25,16 @@ const Index = () => {
   const { isAdmin, viewMode } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>('policies');
   const [activeSubTab, setActiveSubTab] = useState('overview');
+
+  const handleTabChange = (tab: Tab) => {
+    console.log(`Index: Tab change requested: ${tab}`);
+    setActiveTab(tab);
+  };
+
+  const handleSubTabChange = (subTab: string) => {
+    console.log(`Index: Sub-tab change requested: ${subTab}`);
+    setActiveSubTab(subTab);
+  };
 
   // Check if current tab is visible and switch to first available if not
   useEffect(() => {
@@ -58,7 +68,7 @@ const Index = () => {
       case 'newsfeed':
         return <NewsfeedContent activeSubTab={activeSubTab} />;
       case 'policies':
-        return <PoliciesContent activeSubTab={activeSubTab} />;
+        return <PoliciesContent />;
       case 'training':
         return <TrainingContent activeSubTab={activeSubTab} />;
       case 'assurance':
@@ -71,11 +81,11 @@ const Index = () => {
   };
 
   return (
-    <MainLayout 
-      activeTab={activeTab} 
-      onTabChange={setActiveTab}
+    <MainLayout
+      activeTab={activeTab}
+      onTabChange={handleTabChange}
       activeSubTab={activeSubTab}
-      onSubTabChange={setActiveSubTab}
+      onSubTabChange={handleSubTabChange}
     >
       {renderContent()}
     </MainLayout>

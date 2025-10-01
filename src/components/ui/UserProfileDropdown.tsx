@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -9,6 +10,7 @@ import UpdatePhotoModal from '@/components/ui/modals/UpdatePhotoModal';
 import AccountSettingsModal from '@/components/ui/modals/AccountSettingsModal';
 
 export default function UserProfileDropdown() {
+  const { t } = useTranslation();
   const { profile, signOut, isAdmin, isSuperAdmin, viewMode } = useAuth();
   const [viewProfileOpen, setViewProfileOpen] = useState(false);
   const [updatePhotoOpen, setUpdatePhotoOpen] = useState(false);
@@ -65,9 +67,9 @@ export default function UserProfileDropdown() {
               {isAdmin && (
                 <div className="flex items-center space-x-1">
                   <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded">
-                    {isSuperAdmin 
-                      ? (viewMode === 'admin' ? 'Super Admin' : 'Super Admin (Staff View)')
-                      : (viewMode === 'admin' ? 'Admin' : 'Admin (Staff View)')
+                    {isSuperAdmin
+                      ? (viewMode === 'admin' ? t('userProfile.superAdmin') : `${t('userProfile.superAdmin')} (${t('userProfile.staffView')})`)
+                      : (viewMode === 'admin' ? t('userProfile.admin') : `${t('userProfile.admin')} (${t('userProfile.staffView')})`)
                     }
                   </span>
                 </div>
@@ -79,27 +81,27 @@ export default function UserProfileDropdown() {
           
           <DropdownMenuItem className="cursor-pointer" onClick={handleViewProfile}>
             <User className="mr-2 h-4 w-4" />
-            <span>View Profile</span>
+            <span>{t('userProfile.viewProfile')}</span>
           </DropdownMenuItem>
-          
+
           <DropdownMenuItem className="cursor-pointer" onClick={handleUpdatePhoto}>
             <Camera className="mr-2 h-4 w-4" />
-            <span>Update Photo</span>
+            <span>{t('userProfile.updatePhoto')}</span>
           </DropdownMenuItem>
-          
+
           <DropdownMenuItem className="cursor-pointer" onClick={handleAccountSettings}>
             <Settings className="mr-2 h-4 w-4" />
-            <span>Account Settings</span>
+            <span>{t('userProfile.accountSettings')}</span>
           </DropdownMenuItem>
           
           <DropdownMenuSeparator />
           
-          <DropdownMenuItem 
+          <DropdownMenuItem
             className="cursor-pointer text-destructive focus:text-destructive"
             onClick={handleSignOut}
           >
             <LogOut className="mr-2 h-4 w-4" />
-            <span>Sign Out</span>
+            <span>{t('userProfile.signOut')}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

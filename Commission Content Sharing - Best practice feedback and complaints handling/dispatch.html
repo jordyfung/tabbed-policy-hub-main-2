@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!-- Copyright 2003-2022 Rustici Software, LLC All Rights Reserved. Rustici-Engine 22.1.1 2023-10-23T17:45:58+0000 4b75ad1 -->
+<html>
+<head>
+    <title>Rustici Software Dispatch</title>
+    <script src="configuration.js?cache=4b75ad1"></script>
+    <script src="utils.js?cache=4b75ad1"></script>
+    <script>
+        var today = new Date().toISOString().slice(0, 10);
+
+        if (window.location.protocol === "https:") {
+            DispatchRoot = DispatchRoot.replace("http:", "https:");
+        }
+        else {
+            DispatchRoot = DispatchRoot.replace("https:", "http:");
+        }
+
+        include_script("scormdriver.js");
+        include_script("dispatch.client.loader.js");
+
+        function DispatchStart () {
+            if (typeof Start !== "undefined" && typeof LoadContent !== "undefined") {
+                strLMSStandard = "SCORM";
+
+                if (typeof ShowDebugWindow !== "undefined" && typeof DebugMode !== "undefined" && DebugMode) {
+                    ShowDebugWindow();
+                }
+
+                Start();
+                return;
+            }
+
+            setTimeout("DispatchStart()", 500);
+        }
+
+        function DispatchUnload () {
+            WriteToDebug("In DispatchUnload");
+
+            WriteToDebug("Unloading from DispatchUnload");
+            Unload();
+            WriteToDebug("Unloaded from DispatchUnload");
+        }
+    </script>
+    <style>
+        html {
+            height: 100%;
+            overflow-y: hidden;
+        }
+        iframe, body {
+            height: 100%;
+            width: 100%;
+            border: none;
+            margin: 0px;
+        }
+    </style>
+</head>
+
+<body onload="DispatchStart()" onunload="DispatchUnload()">
+    <div id="dispatch_content_frame" style="width: 100%; height: 100%; display: none;">
+        <div style="padding: 20px; font-family: Arial, sans-serif;">
+            <h1>Loading SCORM Course...</h1>
+            <p>Please wait while the course content loads.</p>
+        </div>
+    </div>
+    <div id="dispatch_loading_frame" style="width: 100%; height: 100%; display: block;">
+        <div style="padding: 20px; font-family: Arial, sans-serif; text-align: center;">
+            <h1>SCORM Course Loading</h1>
+            <p>Initializing course content...</p>
+        </div>
+    </div>
+</body>
+
+</html>

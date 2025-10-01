@@ -1,29 +1,36 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User } from 'lucide-react';
+import { Send, Bot, User, ExternalLink, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { RAGService, RAGResponse } from '@/services/ragService';
 
 interface Message {
   id: string;
   content: string;
   sender: 'user' | 'ai';
   timestamp: Date;
+  sources?: RAGResponse['sources'];
+  confidence?: RAGResponse['confidence'];
+  processingTime?: number;
 }
 
 export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: 'Hello! I\'m your compliance AI assistant. I can help you with policy questions, regulatory requirements, and compliance guidance. How can I assist you today?',
+      content: 'Hello! I\'m your compliance AI assistant. I can help you with policy questions, regulatory requirements, and compliance guidance based on your organization\'s policy documents. How can I assist you today?',
       sender: 'ai',
       timestamp: new Date()
     }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [systemReady, setSystemReady] = useState<boolean | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const ragService = new RAGService();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -32,6 +39,21 @@ export default function ChatInterface() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    // Check if RAG system is ready on component mount
+    const checkSystemReady = async () => {
+      try {
+        const ready = await ragService.isSystemReady();
+        setSystemReady(ready);
+      } catch (error) {
+        console.error('Error checking system readiness:', error);
+        setSystemReady(false);
+      }
+    };
+
+    checkSystemReady();
+  }, []);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -47,29 +69,38 @@ export default function ChatInterface() {
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse: Message = {
+    try {
+      // Use RAG service to get response
+      const ragResponse: RAGResponse = await ragService.askQuestion(userMessage.content);
+
+      const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: generateAIResponse(userMessage.content),
+        content: ragResponse.answer,
+        sender: 'ai',
+        timestamp: new Date(),
+        sources: ragResponse.sources,
+        confidence: ragResponse.confidence,
+        processingTime: ragResponse.processingTime
+      };
+
+      setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      console.error('Error getting RAG response:', error);
+
+      // Fallback error message
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: 'I apologize, but I am experiencing technical difficulties. Please try again later or consult the policy documents directly.',
         sender: 'ai',
         timestamp: new Date()
       };
-      setMessages(prev => [...prev, aiResponse]);
+
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
-  const generateAIResponse = (userInput: string): string => {
-    const responses = [
-      "Based on current compliance regulations, I recommend reviewing your data retention policies to ensure they align with GDPR requirements.",
-      "For that specific policy question, you'll want to refer to section 4.2 of your organizational compliance framework. Would you like me to provide more details?",
-      "That's a great question about regulatory compliance. The key considerations include data protection, audit trails, and regular policy reviews.",
-      "I can help you understand the compliance requirements for that scenario. Let me break down the relevant policies and procedures.",
-      "According to your organization's policy documents, the standard procedure involves three key steps: assessment, documentation, and approval."
-    ];
-    return responses[Math.floor(Math.random() * responses.length)];
-  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -86,15 +117,54 @@ export default function ChatInterface() {
     <div className="flex flex-col h-full bg-background">
       {/* Chat Header */}
       <div className="border-b border-border bg-card px-6 py-4">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 rounded-lg bg-primary/10">
-            <Bot className="h-5 w-5 text-primary" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Bot className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">AI Compliance Assistant</h2>
+              <p className="text-sm text-foreground/60">Ask me anything about policies and compliance</p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-lg font-semibold text-foreground">AI Compliance Assistant</h2>
-            <p className="text-sm text-foreground/60">Ask me anything about policies and compliance</p>
+
+          {/* System Status Indicator */}
+          <div className="flex items-center space-x-2">
+            <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs ${
+              systemReady === true
+                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                : systemReady === false
+                ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+            }`}>
+              <div className={`w-2 h-2 rounded-full ${
+                systemReady === true
+                  ? 'bg-green-500'
+                  : systemReady === false
+                  ? 'bg-yellow-500'
+                  : 'bg-gray-500'
+              }`} />
+              <span>
+                {systemReady === true
+                  ? 'Ready'
+                  : systemReady === false
+                  ? 'Sync Needed'
+                  : 'Checking...'
+                }
+              </span>
+            </div>
           </div>
         </div>
+
+        {/* System Status Alert */}
+        {systemReady === false && (
+          <Alert className="mt-3">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              The AI assistant needs policy documents to be synchronized. Please contact an administrator to set up the knowledge base.
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
 
       {/* Messages Container */}
@@ -117,20 +187,70 @@ export default function ChatInterface() {
                 )}
               </div>
               
-              <Card className={`p-4 ${
-                message.sender === 'user'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-card'
-              }`}>
-                <p className="text-sm leading-relaxed">{message.content}</p>
-                <p className={`text-xs mt-2 ${
+              <div className="flex-1">
+                <Card className={`p-4 ${
                   message.sender === 'user'
-                    ? 'text-primary-foreground/70'
-                    : 'text-foreground/50'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-card'
                 }`}>
-                  {formatTime(message.timestamp)}
-                </p>
-              </Card>
+                  <p className="text-sm leading-relaxed">{message.content}</p>
+                  <div className={`text-xs mt-2 ${
+                    message.sender === 'user'
+                      ? 'text-primary-foreground/70'
+                      : 'text-foreground/50'
+                  }`}>
+                    {formatTime(message.timestamp)}
+                    {message.processingTime && (
+                      <span className="ml-2">
+                        ({message.processingTime}ms)
+                      </span>
+                    )}
+                  </div>
+                </Card>
+
+                {/* Show sources and confidence for AI messages */}
+                {message.sender === 'ai' && message.sources && message.sources.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <AlertCircle className="h-4 w-4 text-blue-500" />
+                        <span className="text-xs text-foreground/70">
+                          Confidence: {message.confidence}
+                        </span>
+                      </div>
+                      <span className="text-xs text-foreground/50">
+                        {message.sources.length} source{message.sources.length !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1">
+                      {message.sources.slice(0, 3).map((source, index) => (
+                        <div key={source.id} className="text-xs bg-muted/50 rounded px-2 py-1">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium truncate flex-1 mr-2">
+                              {source.title}
+                            </span>
+                            <a
+                              href={source.metadata?.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 hover:text-blue-700 flex-shrink-0"
+                              title="View in Notion"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          </div>
+                        </div>
+                      ))}
+                      {message.sources.length > 3 && (
+                        <div className="text-xs text-foreground/50 px-2">
+                          +{message.sources.length - 3} more sources
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         ))}

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Best Practice Feedback and Complaints Handling</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            color: #7f8c8d;
+            margin-top: 25px;
+        }
+        .scorm-status {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        .button:active {
+            transform: translateY(0);
+        }
+        .status-display {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+        .debug-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            display: none;
+        }
+        .course-content {
+            margin: 30px 0;
+        }
+        .learning-objective {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Best Practice Feedback and Complaints Handling</h1>
+        
+        <div class="scorm-status">
+            <h3>SCORM Integration Status</h3>
+            <div id="scorm-status">Checking SCORM API connection...</div>
+            <div id="scorm-debug" class="debug-info"></div>
+        </div>
+
+        <div class="status-display">
+            <strong>Course Status:</strong> <span id="course-status">Not Started</span><br>
+            <strong>Progress:</strong> <span id="progress-text">0%</span>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-bar"></div>
+            </div>
+        </div>
+
+        <div class="course-content">
+            <h2>Course Overview</h2>
+            <p>Welcome to the comprehensive course on <strong>Best Practice Feedback and Complaints Handling</strong>. This course will equip you with essential skills and knowledge to handle feedback and complaints effectively in professional environments.</p>
+            
+            <h2>Learning Objectives</h2>
+            <div class="learning-objective">
+                <strong>Objective 1:</strong> Understand the importance of effective feedback handling and its impact on customer satisfaction.
+            </div>
+            <div class="learning-objective">
+                <strong>Objective 2:</strong> Learn proven techniques for managing complaints professionally and constructively.
+            </div>
+            <div class="learning-objective">
+                <strong>Objective 3:</strong> Develop skills for resolving conflicts and turning negative experiences into positive outcomes.
+            </div>
+            <div class="learning-objective">
+                <strong>Objective 4:</strong> Implement best practices for documentation, follow-up, and continuous improvement.
+            </div>
+
+            <h2>Course Content</h2>
+            <p>This interactive course covers:</p>
+            <ul>
+                <li><strong>Understanding Feedback:</strong> Types of feedback, importance, and impact on organizations</li>
+                <li><strong>Complaint Management:</strong> Systematic approach to handling complaints effectively</li>
+                <li><strong>Communication Skills:</strong> Active listening, empathy, and professional communication</li>
+                <li><strong>Resolution Strategies:</strong> Problem-solving techniques and conflict resolution</li>
+                <li><strong>Documentation:</strong> Proper recording and tracking of feedback and complaints</li>
+                <li><strong>Follow-up Procedures:</strong> Ensuring resolution and preventing recurrence</li>
+            </ul>
+
+            <h2>Interactive Elements</h2>
+            <p>This course includes interactive elements to enhance your learning experience:</p>
+            <ul>
+                <li>Real-world scenarios and case studies</li>
+                <li>Interactive quizzes and assessments</li>
+                <li>Practical exercises and role-playing activities</li>
+                <li>Progress tracking and completion certificates</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <button class="button" onclick="startCourse()">Start Course</button>
+            <button class="button" onclick="markComplete()">Mark Complete</button>
+            <button class="button" onclick="showDebug()">Show Debug Info</button>
+            <button class="button" onclick="resetCourse()">Reset Course</button>
+        </div>
+    </div>
+
+    <script>
+        // BULLETPROOF SCORM Integration
+        let scormAPI = null;
+        let courseStarted = false;
+        let courseProgress = 0;
+
+        // Initialize SCORM when page loads
+        window.addEventListener('load', function() {
+            console.log('📚 Course content loaded');
+            initializeSCORM();
+        });
+
+        // Find SCORM API with enhanced error handling
+        function findSCORMAPI() {
+            console.log('🔍 Searching for SCORM API...');
+            
+            // Check if we're in an iframe and look for parent API
+            if (window.parent && window.parent !== window) {
+                if (window.parent.API && typeof window.parent.API.LMSInitialize === 'function') {
+                    console.log('✅ Found SCORM API in parent window');
+                    return window.parent.API;
+                }
+            }
+            
+            // Check top window
+            if (window.top && window.top !== window) {
+                if (window.top.API && typeof window.top.API.LMSInitialize === 'function') {
+                    console.log('✅ Found SCORM API in top window');
+                    return window.top.API;
+                }
+            }
+            
+            // Check current window (fallback)
+            if (window.API && typeof window.API.LMSInitialize === 'function') {
+                console.log('✅ Found SCORM API in current window');
+                return window.API;
+            }
+            
+            console.warn('⚠️ No SCORM API found - running in standalone mode');
+            return null;
+        }
+
+        // Initialize SCORM communication
+        function initializeSCORM() {
+            console.log('🚀 Initializing SCORM...');
+            
+            scormAPI = findSCORMAPI();
+            
+            if (scormAPI) {
+                try {
+                    var result = scormAPI.LMSInitialize('');
+                    if (result === 'true') {
+                        document.getElementById('scorm-status').innerHTML = '✅ SCORM API Connected Successfully';
+                        console.log('✅ SCORM initialized successfully');
+                        updateCourseStatus();
+                    } else {
+                        document.getElementById('scorm-status').innerHTML = '❌ SCORM API Initialize Failed: ' + result;
+                        console.error('❌ SCORM initialization failed:', result);
+                    }
+                } catch (error) {
+                    document.getElementById('scorm-status').innerHTML = '❌ SCORM API Error: ' + error.message;
+                    console.error('❌ SCORM initialization error:', error);
+                }
+            } else {
+                document.getElementById('scorm-status').innerHTML = '⚠️ No SCORM API Found - Running in Standalone Mode';
+                console.log('⚠️ Running in standalone mode');
+            }
+        }
+
+        // Update course status display
+        function updateCourseStatus() {
+            if (scormAPI) {
+                try {
+                    var status = scormAPI.LMSGetValue('cmi.core.lesson_status') || 'not attempted';
+                    var progress = scormAPI.LMSGetValue('cmi.core.score.raw') || '0';
+                    
+                    document.getElementById('course-status').textContent = status;
+                    document.getElementById('progress-text').textContent = progress + '%';
+                    document.getElementById('progress-bar').style.width = progress + '%';
+                } catch (error) {
+                    console.error('Error getting course status:', error);
+                }
+            }
+        }
+
+        // Start course function
+        function startCourse() {
+            console.log('🎯 Starting course...');
+            
+            if (scormAPI) {
+                try {
+                    scormAPI.LMSSetValue('cmi.core.lesson_status', 'incomplete');
+                    scormAPI.LMSSetValue('cmi.core.score.raw', '25');
+                    scormAPI.LMSCommit('');
+                    
+                    document.getElementById('course-status').textContent = 'In Progress';
+                    document.getElementById('progress-text').textContent = '25%';
+                    document.getElementById('progress-bar').style.width = '25%';
+                    courseStarted = true;
+                    courseProgress = 25;
+                    
+                    alert('✅ Course started! Your progress will be tracked.');
+                    console.log('✅ Course started successfully');
+                } catch (error) {
+                    alert('❌ Error starting course: ' + error.message);
+                    console.error('❌ Error starting course:', error);
+                }
+            } else {
+                // Standalone mode
+                document.getElementById('course-status').textContent = 'In Progress (Standalone)';
+                document.getElementById('progress-text').textContent = '25%';
+                document.getElementById('progress-bar').style.width = '25%';
+                courseStarted = true;
+                courseProgress = 25;
+                alert('✅ Course started in standalone mode!');
+                console.log('✅ Course started in standalone mode');
+            }
+        }
+
+        // Mark course complete
+        function markComplete() {
+            console.log('🏁 Completing course...');
+            
+            if (scormAPI) {
+                try {
+                    scormAPI.LMSSetValue('cmi.core.lesson_status', 'completed');
+                    scormAPI.LMSSetValue('cmi.core.score.raw', '100');
+                    scormAPI.LMSCommit('');
+                    
+                    document.getElementById('course-status').textContent = 'Completed';
+                    document.getElementById('progress-text').textContent = '100%';
+                    document.getElementById('progress-bar').style.width = '100%';
+                    courseProgress = 100;
+                    
+                    alert('🎉 Course completed successfully!');
+                    console.log('✅ Course completed successfully');
+                } catch (error) {
+                    alert('❌ Error completing course: ' + error.message);
+                    console.error('❌ Error completing course:', error);
+                }
+            } else {
+                // Standalone mode
+                document.getElementById('course-status').textContent = 'Completed (Standalone)';
+                document.getElementById('progress-text').textContent = '100%';
+                document.getElementById('progress-bar').style.width = '100%';
+                courseProgress = 100;
+                alert('🎉 Course completed in standalone mode!');
+                console.log('✅ Course completed in standalone mode');
+            }
+        }
+
+        // Reset course
+        function resetCourse() {
+            console.log('🔄 Resetting course...');
+            
+            if (scormAPI) {
+                try {
+                    scormAPI.LMSSetValue('cmi.core.lesson_status', 'not attempted');
+                    scormAPI.LMSSetValue('cmi.core.score.raw', '0');
+                    scormAPI.LMSCommit('');
+                    
+                    document.getElementById('course-status').textContent = 'Not Started';
+                    document.getElementById('progress-text').textContent = '0%';
+                    document.getElementById('progress-bar').style.width = '0%';
+                    courseStarted = false;
+                    courseProgress = 0;
+                    
+                    alert('🔄 Course reset successfully!');
+                    console.log('✅ Course reset successfully');
+                } catch (error) {
+                    alert('❌ Error resetting course: ' + error.message);
+                    console.error('❌ Error resetting course:', error);
+                }
+            } else {
+                // Standalone mode
+                document.getElementById('course-status').textContent = 'Not Started';
+                document.getElementById('progress-text').textContent = '0%';
+                document.getElementById('progress-bar').style.width = '0%';
+                courseStarted = false;
+                courseProgress = 0;
+                alert('🔄 Course reset in standalone mode!');
+                console.log('✅ Course reset in standalone mode');
+            }
+        }
+
+        // Show debug information
+        function showDebug() {
+            const debugDiv = document.getElementById('scorm-debug');
+            if (debugDiv.style.display === 'none' || debugDiv.style.display === '') {
+                let debugInfo = 'SCORM Debug Information:\n\n';
+                debugInfo += 'API Available: ' + (scormAPI ? 'Yes' : 'No') + '\n';
+                debugInfo += 'Window Parent: ' + (window.parent ? 'Yes' : 'No') + '\n';
+                debugInfo += 'Window Top: ' + (window.top ? 'Yes' : 'No') + '\n';
+                debugInfo += 'Course Started: ' + (courseStarted ? 'Yes' : 'No') + '\n';
+                debugInfo += 'Course Progress: ' + courseProgress + '%\n\n';
+                
+                if (scormAPI) {
+                    try {
+                        debugInfo += 'Student ID: ' + scormAPI.LMSGetValue('cmi.core.student_id') + '\n';
+                        debugInfo += 'Lesson Status: ' + scormAPI.LMSGetValue('cmi.core.lesson_status') + '\n';
+                        debugInfo += 'Score Raw: ' + scormAPI.LMSGetValue('cmi.core.score.raw') + '\n';
+                        debugInfo += 'Last Error: ' + scormAPI.LMSGetLastError() + '\n';
+                    } catch (e) {
+                        debugInfo += 'Error getting SCORM data: ' + e.message + '\n';
+                    }
+                }
+                
+                debugDiv.textContent = debugInfo;
+                debugDiv.style.display = 'block';
+            } else {
+                debugDiv.style.display = 'none';
+            }
+        }
+
+        // Handle page unload
+        window.addEventListener('beforeunload', function() {
+            if (scormAPI) {
+                try {
+                    scormAPI.LMSFinish('');
+                    console.log('✅ SCORM session finished');
+                } catch (error) {
+                    console.error('❌ Error finishing SCORM session:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
