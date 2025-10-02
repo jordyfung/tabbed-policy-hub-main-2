@@ -40,8 +40,6 @@ All colors MUST be HSL.
     --radius: 0.5rem;
 
     /* Australian Aged Care Brand Colors */
-    --coral: 11 55% 62%;
-    --coral-foreground: 0 0% 100%;
     --success: 122 75% 33%;
     --success-foreground: 0 0% 100%;
     --info: 230 89% 62%;
@@ -133,5 +131,19 @@ body {
 iframe[src*="notion"] {
   background: white !important;
   color-scheme: light !important;
+}
+
+/* Attention bounce animation for assistant button */
+@keyframes attention-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-attention-bounce {
+  animation: attention-bounce 0.6s ease-in-out;
 }
 }

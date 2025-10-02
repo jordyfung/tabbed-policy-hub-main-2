@@ -48,22 +48,6 @@ const reportTemplates = [
     type: 'Executive',
     status: 'Ready',
     downloads: 31
-  },
-  {
-    name: 'Incident & Complaints Summary',
-    description: 'Incident reports, complaints analysis, and corrective actions',
-    lastGenerated: '5 days ago',
-    type: 'Standard',
-    status: 'Ready',
-    downloads: 18
-  },
-  {
-    name: 'PDCA Improvement Tracking',
-    description: 'Plan-Do-Check-Act cycle progress and outcomes',
-    lastGenerated: '1 week ago',
-    type: 'Quality',
-    status: 'Ready',
-    downloads: 12
   }
 ];
 
@@ -81,13 +65,6 @@ const scheduledReports = [
     recipients: 3,
     nextRun: 'Dec 2, 2024',
     status: 'Active'
-  },
-  {
-    name: 'Quarterly Executive Summary',
-    schedule: 'Every quarter end',
-    recipients: 12,
-    nextRun: 'Dec 31, 2024',
-    status: 'Paused'
   }
 ];
 
@@ -106,20 +83,6 @@ const recentReports = [
     size: '1.8 MB',
     type: 'Excel'
   },
-  {
-    name: 'Risk_Assessment_Summary.pdf',
-    generatedBy: 'Michael Torres',
-    date: '3 days ago',
-    size: '3.1 MB',
-    type: 'PDF'
-  },
-  {
-    name: 'Department_Audit_Results.pdf',
-    generatedBy: 'System',
-    date: '5 days ago',
-    size: '4.2 MB',
-    type: 'PDF'
-  }
 ];
 
 export default function ReportsContent() {
@@ -131,17 +94,9 @@ export default function ReportsContent() {
           <p className="text-muted-foreground mt-2">Generate and manage compliance reports</p>
         </div>
         <div className="flex items-center space-x-3">
-          <Button variant="outline" size="sm">
-            <Search className="h-4 w-4 mr-2" />
-            Search
-          </Button>
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4 mr-2" />
-            Filter
-          </Button>
-          <Button className="bg-coral hover:bg-coral/90 text-coral-foreground">
-            <Plus className="h-4 w-4 mr-2" />
-            New Report
+          <Button variant="outline" size="sm" onClick={() => console.log('Export reports')}>
+            <Download className="h-4 w-4 mr-2" />
+            Export
           </Button>
         </div>
       </div>
@@ -150,10 +105,6 @@ export default function ReportsContent() {
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-foreground">Report Templates</h3>
-          <Button variant="outline" size="sm">
-            <Settings className="h-4 w-4 mr-2" />
-            Manage Templates
-          </Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {reportTemplates.map((template, index) => (

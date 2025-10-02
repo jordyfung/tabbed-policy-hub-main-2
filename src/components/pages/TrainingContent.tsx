@@ -23,6 +23,11 @@ export default function TrainingContent({ activeSubTab = 'profile' }: TrainingCo
       case 'profile':
         return useRedesignedProfile ? <StaffProfileContentRedesigned /> : <StaffProfileContent />;
       case 'courses':
+        // For staff: redirect to profile (courses subtab is disabled)
+        // For admins: show courses content or redirect to management
+        if (!isAdmin) {
+          return useRedesignedProfile ? <StaffProfileContentRedesigned /> : <StaffProfileContent />;
+        }
         return <CoursesContent />;
       case 'team':
         if (!isAdmin || !isSubTabEnabled('training', 'team')) {
@@ -31,6 +36,11 @@ export default function TrainingContent({ activeSubTab = 'profile' }: TrainingCo
         return <TeamManagementContent />;
       case 'management':
         if (!isAdmin || !isSubTabEnabled('training', 'management')) {
+          return <div>Access denied</div>;
+        }
+        return <CourseManagement />;
+      case 'course-management':
+        if (!isAdmin || !isSubTabEnabled('training', 'course-management')) {
           return <div>Access denied</div>;
         }
         return <CourseManagement />;

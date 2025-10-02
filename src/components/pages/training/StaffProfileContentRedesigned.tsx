@@ -16,6 +16,7 @@ import ComplianceSummary from '@/components/training/ComplianceSummary';
 import NextUpCard from '@/components/training/NextUpCard';
 import AssignmentsList from '@/components/training/AssignmentsList';
 import HistoryPanel from '@/components/training/HistoryPanel';
+import CatalogPanel from '@/components/training/CatalogPanel';
 
 interface StaffMember {
   id: string;
@@ -174,6 +175,46 @@ export default function StaffProfileContentRedesigned() {
     // TODO: Implement certificate viewing
   };
 
+  const handleCatalogStart = (courseId: string) => {
+    toast({ 
+      title: 'Launching Course',
+      description: 'Opening course...'
+    });
+    // TODO: Implement course launch
+  };
+
+  const handleCatalogEnroll = (courseId: string) => {
+    toast({ 
+      title: 'Enrolling in Course',
+      description: 'Enrolling you in this course...'
+    });
+    // TODO: Implement course enrollment
+  };
+
+  const handleCatalogAssign = (courseId: string) => {
+    toast({ 
+      title: 'Assigning Course',
+      description: 'Opening assignment dialog...'
+    });
+    // TODO: Implement course assignment
+  };
+
+  const handleCatalogViewDetails = (courseId: string) => {
+    toast({ 
+      title: 'View Course Details',
+      description: 'Opening course details...'
+    });
+    // TODO: Implement course details view
+  };
+
+  const handleCatalogViewSyllabus = (courseId: string) => {
+    toast({ 
+      title: 'View Course Syllabus',
+      description: 'Opening course syllabus...'
+    });
+    // TODO: Implement syllabus view
+  };
+
   if (loading || assignmentsLoading) {
     return (
       <div className="space-y-6 animate-in fade-in-0 duration-300">
@@ -289,6 +330,17 @@ export default function StaffProfileContentRedesigned() {
       <HistoryPanel
         history={history}
         onViewCertificate={handleViewCertificate}
+      />
+
+      {/* Catalog Panel */}
+      <CatalogPanel
+        onStart={handleCatalogStart}
+        onEnroll={handleCatalogEnroll}
+        onAssign={handleCatalogAssign}
+        onViewDetails={handleCatalogViewDetails}
+        onViewSyllabus={handleCatalogViewSyllabus}
+        isAdmin={isAdmin}
+        viewingAsManager={isAdmin && selectedUserId !== profile?.user_id}
       />
     </div>
   );

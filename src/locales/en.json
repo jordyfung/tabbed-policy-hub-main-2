@@ -9,6 +9,7 @@
     "training": "Training",
     "assurance": "Assurance",
     "announcements": "Announcements",
+    "profile": "Profile",
     "viewMode": "View Mode",
     "admin": "Admin",
     "staff": "Staff"
@@ -180,6 +181,22 @@
       "noAssignments": "No training assignments found",
       "browseCatalog": "Browse Course Catalog",
       "noAssignmentsDesc": "You don't have any training assignments yet. Check back later or contact your manager."
+    },
+    "catalog": {
+      "title": "Course Catalog",
+      "subtitle": "Browse and explore available courses",
+      "searchPlaceholder": "Search courses...",
+      "filters": {
+        "all": "All",
+        "manual": "Manual"
+      },
+      "actions": {
+        "launch": "Launch",
+        "enroll": "Enroll",
+        "assign": "Assign"
+      },
+      "loadMore": "Load More",
+      "emptyState": "No courses found matching your criteria"
     }
   },
   "time": {
@@ -189,6 +206,23 @@
     "month_other": "{{count}} months",
     "year_one": "{{count}} year",
     "year_other": "{{count}} years"
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "View and manage your personal information and training progress",
+    "personalInfo": "Personal Information",
+    "email": "Email",
+    "phone": "Phone",
+    "memberSince": "Member Since",
+    "department": "Department",
+    "jobTitle": "Job Title",
+    "editProfile": "Edit Profile",
+    "trainingSummary": "Training Summary",
+    "coursesCompleted": "courses completed",
+    "recentCompletions": "Recent Completions",
+    "completedOn": "Completed on",
+    "noTrainingHistory": "No training history available",
+    "errorLoading": "Error loading profile information"
   }
 }
 

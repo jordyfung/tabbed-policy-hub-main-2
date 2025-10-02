@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { TrendingUp, TrendingDown, Calendar, Download, Filter } from 'lucide-react';
+import { TrendingUp, TrendingDown, Calendar, Download, Filter, Building, AlertTriangle } from 'lucide-react';
 
 const timeRanges = ['7D', '30D', '90D', '1Y'];
 
@@ -20,7 +20,7 @@ const trendData = [
 const chartConfig = {
   value: {
     label: "Value",
-    color: "hsl(var(--coral))",
+    color: "hsl(var(--primary))",
   },
   compliance: {
     label: "Compliance",
@@ -31,14 +31,13 @@ const chartConfig = {
 const complianceData = [
   { name: 'Compliant', value: 78, color: 'hsl(var(--success))' },
   { name: 'At Risk', value: 15, color: 'hsl(var(--info))' },
-  { name: 'Non-Compliant', value: 7, color: 'hsl(var(--coral))' },
+  { name: 'Non-Compliant', value: 7, color: 'hsl(var(--primary))' },
 ];
 
 const topMetrics = [
   { label: 'Quality Standards Score', value: '94.2%', change: '+2.1%', trend: 'up' },
   { label: 'Staff Training Compliance', value: '89.7%', change: '+5.3%', trend: 'up' },
   { label: 'Care Minutes Compliance', value: '96.8%', change: '+1.2%', trend: 'up' },
-  { label: '24/7 RN Coverage', value: '100%', change: '0%', trend: 'stable' },
 ];
 
 export default function AnalyticsContent() {
@@ -47,29 +46,13 @@ export default function AnalyticsContent() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Analytics</h1>
-          <p className="text-muted-foreground mt-2">Comprehensive compliance metrics and insights</p>
+          <p className="text-muted-foreground mt-2">Key compliance metrics and trends</p>
         </div>
         <div className="flex items-center space-x-3">
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4 mr-2" />
-            Filter
-          </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={() => console.log('Export analytics data')}>
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <div className="flex border rounded-lg p-1">
-            {timeRanges.map((range, index) => (
-              <Button
-                key={range}
-                variant={index === 1 ? "default" : "ghost"}
-                size="sm"
-                className="h-8"
-              >
-                {range}
-              </Button>
-            ))}
-          </div>
         </div>
       </div>
 
@@ -85,13 +68,13 @@ export default function AnalyticsContent() {
                   {metric.trend === 'up' ? (
                     <TrendingUp className="h-4 w-4 text-success mr-1" />
                   ) : metric.trend === 'down' ? (
-                    <TrendingDown className="h-4 w-4 text-coral mr-1" />
+                    <TrendingDown className="h-4 w-4 text-primary mr-1" />
                   ) : (
                     <div className="w-4 h-4 rounded-full bg-muted-foreground mr-1" />
                   )}
                   <span className={`text-sm font-medium ${
                     metric.trend === 'up' ? 'text-success' : 
-                    metric.trend === 'down' ? 'text-coral' : 'text-muted-foreground'
+                    metric.trend === 'down' ? 'text-primary' : 'text-muted-foreground'
                   }`}>
                     {metric.change}
                   </span>
@@ -102,109 +85,69 @@ export default function AnalyticsContent() {
         ))}
       </div>
 
-      {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Trend Chart */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-foreground">Compliance Trends</h3>
-            <Badge variant="outline">Last 6 months</Badge>
-          </div>
-          <ChartContainer config={chartConfig} className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={trendData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
-                <YAxis stroke="hsl(var(--muted-foreground))" />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Line 
-                  type="monotone" 
-                  dataKey="compliance" 
-                  stroke="hsl(var(--success))" 
-                  strokeWidth={3}
-                  dot={{ fill: "hsl(var(--success))", strokeWidth: 2, r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </Card>
-
-        {/* Compliance Distribution */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-foreground">Compliance Distribution</h3>
-            <Badge variant="outline">Current Status</Badge>
-          </div>
-          <ChartContainer config={chartConfig} className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={complianceData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  labelLine={false}
-                >
-                  {complianceData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <ChartTooltip content={<ChartTooltipContent />} />
-              </PieChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </Card>
-      </div>
-
-      {/* Data Table */}
+      {/* Compliance Trend Chart */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-foreground">Department Performance</h3>
-          <Button variant="outline" size="sm">
-            View All
-          </Button>
+          <h3 className="text-lg font-semibold text-foreground">Compliance Trends</h3>
+          <Badge variant="outline">Last 6 months</Badge>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left py-3 px-4 font-medium text-muted-foreground">Department</th>
-                <th className="text-left py-3 px-4 font-medium text-muted-foreground">Compliance Rate</th>
-                <th className="text-left py-3 px-4 font-medium text-muted-foreground">Training Progress</th>
-                <th className="text-left py-3 px-4 font-medium text-muted-foreground">Risk Level</th>
-                <th className="text-left py-3 px-4 font-medium text-muted-foreground">Last Audit</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                { dept: 'Clinical Care', compliance: '96%', training: '94%', risk: 'Low', audit: '2 weeks ago' },
-                { dept: 'Personal Care', compliance: '89%', training: '87%', risk: 'Medium', audit: '1 month ago' },
-                { dept: 'Lifestyle & Wellbeing', compliance: '94%', training: '95%', risk: 'Low', audit: '3 weeks ago' },
-                { dept: 'Administration', compliance: '98%', training: '99%', risk: 'Low', audit: '1 week ago' },
-                { dept: 'Facilities & Maintenance', compliance: '91%', training: '88%', risk: 'Medium', audit: '2 months ago' },
-              ].map((row, index) => (
-                <tr key={index} className="border-b border-border hover:bg-muted/50">
-                  <td className="py-3 px-4 font-medium text-foreground">{row.dept}</td>
-                  <td className="py-3 px-4">
-                    <span className="text-success font-medium">{row.compliance}</span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <span className="text-info font-medium">{row.training}</span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <Badge variant={row.risk === 'Low' ? 'default' : 'secondary'}>
-                      {row.risk}
-                    </Badge>
-                  </td>
-                  <td className="py-3 px-4 text-muted-foreground">{row.audit}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={trendData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
+              <YAxis stroke="hsl(var(--muted-foreground))" />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Line 
+                type="monotone" 
+                dataKey="compliance" 
+                stroke="hsl(var(--success))" 
+                strokeWidth={3}
+                dot={{ fill: "hsl(var(--success))", strokeWidth: 2, r: 4 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </ChartContainer>
       </Card>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Total Departments</p>
+              <p className="text-2xl font-bold text-foreground">5</p>
+            </div>
+            <div className="p-3 rounded-lg bg-info/10 text-info">
+              <Building className="h-6 w-6" />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Average Compliance</p>
+              <p className="text-2xl font-bold text-foreground">93.6%</p>
+            </div>
+            <div className="p-3 rounded-lg bg-success/10 text-success">
+              <TrendingUp className="h-6 w-6" />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Departments at Risk</p>
+              <p className="text-2xl font-bold text-foreground">2</p>
+            </div>
+            <div className="p-3 rounded-lg bg-warning/10 text-warning">
+              <AlertTriangle className="h-6 w-6" />
+            </div>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 }

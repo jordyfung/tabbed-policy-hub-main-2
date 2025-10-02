@@ -1,6 +1,7 @@
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Shield, Users, Heart, Building, Utensils, Pill, UserCheck, AlertTriangle } from 'lucide-react';
+import QualityStandardsTable from './QualityStandardsTable';
 
 const qualityStandards = [
   {
@@ -91,7 +92,7 @@ export default function QualityStandardsContent() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-foreground">Quality Standards Compliance</h1>
-        <p className="text-foreground/60 mt-2">Monitor compliance against the Strengthened Quality Standards</p>
+        <p className="text-foreground/60 mt-2">Monitor compliance against the Strengthened Quality Standards and manage audit evidence</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -171,6 +172,12 @@ export default function QualityStandardsContent() {
           })}
         </div>
       </Card>
+
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold text-foreground mb-4">Audit Evidence Management</h2>
+        <p className="text-foreground/60 mb-6">Link policies, training, and evidence to specific standards and actions for audit preparation.</p>
+        <QualityStandardsTable />
+      </div>
     </div>
   );
 }

@@ -8,7 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Plus, Edit, Trash2, BookOpen, Clock, Users, Star, Upload, Play } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Plus, Edit, Trash2, BookOpen, Clock, Users, Star, Upload, Play, Settings, Bell, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
@@ -30,16 +32,28 @@ interface Course {
   scorm_entry_point: string | null;
 }
 
+interface CourseFrequency {
+  id: string;
+  course_id: string;
+  frequency_months: number;
+  role: 'admin' | 'staff' | null;
+  email_notifications_enabled?: boolean;
+  created_at: string;
+  courses?: { title: string };
+}
+
 export default function CourseManagement() {
   const { profile, isAdmin } = useAuth();
   const { toast } = useToast();
   const [courses, setCourses] = useState<Course[]>([]);
+  const [frequencies, setFrequencies] = useState<CourseFrequency[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [showScormUpload, setShowScormUpload] = useState(false);
   const [playingCourse, setPlayingCourse] = useState<Course | null>(null);
+  const [activeTab, setActiveTab] = useState('courses');
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -47,9 +61,16 @@ export default function CourseManagement() {
     duration_hours: 1,
     is_mandatory: false
   });
+  const [frequencyFormData, setFrequencyFormData] = useState({
+    course_id: '',
+    frequency_months: 12,
+    role: 'staff' as 'admin' | 'staff' | null,
+    email_notifications_enabled: true
+  });
 
   useEffect(() => {
     fetchCourses();
+    fetchFrequencies();
   }, []);
 
   const fetchCourses = async () => {
@@ -70,6 +91,28 @@ export default function CourseManagement() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchFrequencies = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('course_frequencies')
+        .select(`
+          *,
+          courses(title)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setFrequencies((data || []) as CourseFrequency[]);
+    } catch (error) {
+      console.error('Error fetching frequencies:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch course frequencies",
+        variant: "destructive",
+      });
     }
   };
 
@@ -185,6 +228,94 @@ export default function CourseManagement() {
     resetForm();
   };
 
+  const handleFrequencySubmit = async () => {
+    if (!frequencyFormData.course_id) return;
+
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('course_frequencies')
+        .insert({
+          course_id: frequencyFormData.course_id,
+          frequency_months: frequencyFormData.frequency_months,
+          role: frequencyFormData.role,
+          email_notifications_enabled: frequencyFormData.email_notifications_enabled
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Course frequency settings saved successfully",
+      });
+
+      setFrequencyFormData({
+        course_id: '',
+        frequency_months: 12,
+        role: 'staff',
+        email_notifications_enabled: true
+      });
+      fetchFrequencies();
+    } catch (error) {
+      console.error('Error saving frequency:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save frequency settings",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const updateFrequency = async (id: string, updates: Partial<CourseFrequency>) => {
+    try {
+      const { error } = await supabase
+        .from('course_frequencies')
+        .update(updates)
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Frequency settings updated successfully",
+      });
+      fetchFrequencies();
+    } catch (error) {
+      console.error('Error updating frequency:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update frequency settings",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const deleteFrequency = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('course_frequencies')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Frequency settings deleted successfully",
+      });
+      fetchFrequencies();
+    } catch (error) {
+      console.error('Error deleting frequency:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete frequency settings",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return <div className="animate-pulse">Loading courses...</div>;
   }
@@ -194,7 +325,7 @@ export default function CourseManagement() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Course Management</h2>
-          <p className="text-foreground/60">Create and manage training courses</p>
+          <p className="text-foreground/60">Create and manage training courses, set frequencies and notifications</p>
         </div>
         
         <div className="flex space-x-2">
@@ -300,7 +431,20 @@ export default function CourseManagement() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="courses">
+            <BookOpen className="h-4 w-4 mr-2" />
+            Courses
+          </TabsTrigger>
+          <TabsTrigger value="frequencies">
+            <Calendar className="h-4 w-4 mr-2" />
+            Frequencies & Notifications
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="courses" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.length === 0 ? (
           <div className="col-span-full text-center py-12">
             <BookOpen className="w-12 h-12 text-foreground/30 mx-auto mb-4" />
@@ -373,7 +517,171 @@ export default function CourseManagement() {
             </Card>
           ))
         )}
-      </div>
+        </div>
+        </TabsContent>
+
+        <TabsContent value="frequencies" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">Training Frequencies</h3>
+              <p className="text-sm text-muted-foreground">Set how often staff need to complete each course</p>
+            </div>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Frequency Rule
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Course Frequency</DialogTitle>
+                  <DialogDescription>
+                    Set how often this course needs to be completed and notification preferences.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="frequency-course">Course</Label>
+                    <Select 
+                      value={frequencyFormData.course_id} 
+                      onValueChange={(value) => setFrequencyFormData({ ...frequencyFormData, course_id: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a course" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {courses.map((course) => (
+                          <SelectItem key={course.id} value={course.id}>
+                            {course.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="frequency-months">Frequency (Months)</Label>
+                    <Select 
+                      value={frequencyFormData.frequency_months.toString()} 
+                      onValueChange={(value) => setFrequencyFormData({ ...frequencyFormData, frequency_months: parseInt(value) })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">1 Month</SelectItem>
+                        <SelectItem value="3">3 Months</SelectItem>
+                        <SelectItem value="6">6 Months</SelectItem>
+                        <SelectItem value="12">12 Months (Annual)</SelectItem>
+                        <SelectItem value="24">24 Months</SelectItem>
+                        <SelectItem value="36">36 Months</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="frequency-role">Apply to Role</Label>
+                    <Select 
+                      value={frequencyFormData.role || 'all'} 
+                      onValueChange={(value) => setFrequencyFormData({ ...frequencyFormData, role: value === 'all' ? null : value as 'admin' | 'staff' })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Roles</SelectItem>
+                        <SelectItem value="staff">Staff Only</SelectItem>
+                        <SelectItem value="admin">Admin Only</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="email-notifications"
+                      checked={frequencyFormData.email_notifications_enabled}
+                      onCheckedChange={(checked) => setFrequencyFormData({ ...frequencyFormData, email_notifications_enabled: checked })}
+                    />
+                    <Label htmlFor="email-notifications">Enable Email Notifications</Label>
+                  </div>
+                  
+                  <div className="flex justify-end space-x-2">
+                    <Button variant="outline" onClick={() => setFrequencyFormData({
+                      course_id: '',
+                      frequency_months: 12,
+                      role: 'staff',
+                      email_notifications_enabled: true
+                    })}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleFrequencySubmit} disabled={saving || !frequencyFormData.course_id}>
+                      {saving ? "Saving..." : "Save Frequency"}
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {frequencies.length === 0 ? (
+              <div className="col-span-full text-center py-12">
+                <Calendar className="w-12 h-12 text-foreground/30 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">No frequency rules set</h3>
+                <p className="text-foreground/60">Add frequency rules to automate training schedules</p>
+              </div>
+            ) : (
+              frequencies.map((frequency) => (
+                <Card key={frequency.id} className="p-6">
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-semibold text-foreground">{(frequency as any).courses?.title || 'Unknown Course'}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Every {frequency.frequency_months} month{frequency.frequency_months !== 1 ? 's' : ''}
+                        </p>
+                      </div>
+                      <Badge variant={frequency.email_notifications_enabled ? 'default' : 'secondary'}>
+                        <Bell className="w-3 h-3 mr-1" />
+                        {frequency.email_notifications_enabled ? 'Notifications On' : 'Notifications Off'}
+                      </Badge>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Role:</span>
+                        <span>{frequency.role || 'All Roles'}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-end space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => updateFrequency(frequency.id, { 
+                          email_notifications_enabled: !frequency.email_notifications_enabled 
+                        })}
+                      >
+                        <Bell className="w-4 h-4 mr-1" />
+                        Toggle Notifications
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => deleteFrequency(frequency.id)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* SCORM Upload Dialog */}
       <Dialog open={showScormUpload} onOpenChange={setShowScormUpload}>

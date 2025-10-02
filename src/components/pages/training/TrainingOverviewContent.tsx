@@ -198,7 +198,7 @@ export default function TrainingOverviewContent() {
               <p className="text-sm font-medium text-foreground/60">Active Assignments</p>
               <p className="text-2xl font-bold text-foreground mt-2">{stats.activeAssignments}</p>
             </div>
-            <div className="p-3 rounded-lg bg-coral/10 text-coral">
+            <div className="p-3 rounded-lg bg-primary/10 text-primary">
               <Target className="h-6 w-6" />
             </div>
           </div>
@@ -333,8 +333,8 @@ export default function TrainingOverviewContent() {
             <p className="text-2xl font-bold text-info">{stats.mandatoryCourses}</p>
             <p className="text-sm text-foreground/60">Mandatory Courses</p>
           </div>
-          <div className="text-center p-4 bg-coral/10 rounded-lg">
-            <p className="text-2xl font-bold text-coral">{upcomingDeadlines.length}</p>
+          <div className="text-center p-4 bg-primary/10 rounded-lg">
+            <p className="text-2xl font-bold text-primary">{upcomingDeadlines.length}</p>
             <p className="text-sm text-foreground/60">Upcoming Deadlines</p>
           </div>
         </div>

@@ -11,9 +11,10 @@ import { Pencil, Save, X } from 'lucide-react';
 interface ViewProfileModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSaved?: () => void;
 }
 
-export default function ViewProfileModal({ open, onOpenChange }: ViewProfileModalProps) {
+export default function ViewProfileModal({ open, onOpenChange, onSaved }: ViewProfileModalProps) {
   const { profile } = useAuth();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
@@ -42,6 +43,7 @@ export default function ViewProfileModal({ open, onOpenChange }: ViewProfileModa
       });
       
       setIsEditing(false);
+      onSaved?.();
     } catch (error) {
       toast({
         title: "Error",

@@ -9,6 +9,7 @@ interface Profile {
   first_name: string | null;
   last_name: string | null;
   role: 'super-admin' | 'admin' | 'staff';
+  photo_url?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -21,6 +22,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, firstName?: string, lastName?: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  refetchProfile: () => Promise<void>;
   isAdmin: boolean;
   isSuperAdmin: boolean;
   viewMode: 'admin' | 'staff';
@@ -35,6 +37,7 @@ const AuthContext = createContext<AuthContextType>({
   signUp: async () => ({ error: null }),
   signIn: async () => ({ error: null }),
   signOut: async () => {},
+  refetchProfile: async () => {},
   isAdmin: false,
   isSuperAdmin: false,
   viewMode: 'admin',
@@ -148,6 +151,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setProfile(null);
   };
 
+  const refetchProfile = async () => {
+    if (user?.id) {
+      await fetchProfile(user.id);
+    }
+  };
+
   const isAdmin = profile?.role === 'admin' || profile?.role === 'super-admin';
   const isSuperAdmin = profile?.role === 'super-admin';
 
@@ -165,6 +174,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signUp,
     signIn,
     signOut,
+    refetchProfile,
     isAdmin,
     isSuperAdmin,
     viewMode,

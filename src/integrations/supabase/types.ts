@@ -593,6 +593,7 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          photo_url: string | null
           role: Database["public"]["Enums"]["user_role"]
           updated_at: string
           user_id: string
@@ -603,6 +604,7 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          photo_url?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
           user_id: string
@@ -613,6 +615,7 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          photo_url?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
           user_id?: string
@@ -867,6 +870,38 @@ export type Database = {
           role?: Database["public"]["Enums"]["user_role"]
         }
         Relationships: []
+      }
+      employee_profiles: {
+        Row: {
+          id: string
+          user_id: string
+          summary: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          summary: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          summary?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          }
+        ]
       }
     }
     Views: {

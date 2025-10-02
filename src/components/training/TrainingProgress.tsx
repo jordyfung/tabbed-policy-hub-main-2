@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { BookOpen, Clock, CheckCircle, Trophy, Star, Target } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import CourseCompletionForm from './CourseCompletionForm';
 
 interface Assignment {
   id: string;
@@ -107,43 +108,6 @@ export default function TrainingProgress() {
     }
   };
 
-  const completeTraining = async () => {
-    if (!selectedAssignment || !profile?.user_id) return;
-
-    setCompleting(true);
-    try {
-      const { error } = await supabase
-        .from('course_completions')
-        .insert({
-          assignment_id: selectedAssignment.id,
-          completed_by: profile.user_id,
-          notes: completionNotes,
-          xp_earned: selectedAssignment.course.duration_hours * 10, // 10 XP per hour
-          score: 100 // Default perfect score
-        });
-
-      if (error) throw error;
-
-      toast({
-        title: "Congratulations!",
-        description: `You completed "${selectedAssignment.course.title}"`,
-      });
-
-      setIsDialogOpen(false);
-      setSelectedAssignment(null);
-      setCompletionNotes('');
-      fetchTrainingData();
-    } catch (error) {
-      console.error('Error completing training:', error);
-      toast({
-        title: "Error",
-        description: "Failed to complete training",
-        variant: "destructive",
-      });
-    } finally {
-      setCompleting(false);
-    }
-  };
 
   const openCompletionDialog = (assignment: Assignment) => {
     setSelectedAssignment(assignment);
@@ -216,7 +180,7 @@ export default function TrainingProgress() {
 
         <Card className="p-6">
           <div className="flex items-center space-x-3 mb-4">
-            <Star className="w-8 h-8 text-coral" />
+            <Star className="w-8 h-8 text-primary" />
             <div>
               <h3 className="font-semibold text-foreground">Training Streak</h3>
               <p className="text-2xl font-bold text-foreground">{streak?.current_streak || 0}</p>
@@ -299,42 +263,23 @@ export default function TrainingProgress() {
         </Card>
       )}
 
-      {/* Course Completion Dialog */}
+      {/* Course Completion Dialog with Digital Signature */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Complete Course: {selectedAssignment?.course.title}</DialogTitle>
           </DialogHeader>
           {selectedAssignment && (
-            <div className="space-y-4">
-              <div className="p-4 bg-muted/50 rounded-lg">
-                <h4 className="font-medium text-foreground mb-2">Course Content</h4>
-                <p className="text-sm text-foreground/70 whitespace-pre-wrap">
-                  {selectedAssignment.course.content || selectedAssignment.course.description}
-                </p>
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">
-                  Completion Notes (Optional)
-                </label>
-                <Textarea
-                  placeholder="Add any notes about your learning experience..."
-                  value={completionNotes}
-                  onChange={(e) => setCompletionNotes(e.target.value)}
-                  rows={3}
-                />
-              </div>
-              
-              <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={completeTraining} disabled={completing}>
-                  {completing ? "Completing..." : "Mark as Completed"}
-                </Button>
-              </div>
-            </div>
+            <CourseCompletionForm
+              assignmentId={selectedAssignment.id}
+              courseTitle={selectedAssignment.course.title}
+              onCompletion={() => {
+                setIsDialogOpen(false);
+                setSelectedAssignment(null);
+                setCompletionNotes('');
+                fetchTrainingData();
+              }}
+            />
           )}
         </DialogContent>
       </Dialog>

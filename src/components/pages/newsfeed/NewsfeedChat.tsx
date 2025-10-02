@@ -108,7 +108,7 @@ export default function NewsfeedChat() {
           <div className="flex items-center space-x-4">
             <Avatar className="h-12 w-12">
               <AvatarFallback className="bg-primary text-primary-foreground">
-                <Bot className="h-6 w-6" />
+                <span className="h-6 w-6 flex items-center justify-center text-2xl">👾</span>
               </AvatarFallback>
             </Avatar>
             <div>
@@ -129,7 +129,7 @@ export default function NewsfeedChat() {
                 <Avatar className="h-10 w-10 flex-shrink-0">
                   <AvatarFallback className={message.sender === 'ai' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}>
                     {message.sender === 'ai' ? (
-                      <Bot className="h-5 w-5" />
+                      <span className="h-5 w-5 flex items-center justify-center text-2xl">👾</span>
                     ) : (
                       profile?.first_name?.[0] || 'U'
                     )}
@@ -159,7 +159,7 @@ export default function NewsfeedChat() {
               <div className="flex space-x-3 max-w-[85%]">
                 <Avatar className="h-10 w-10 flex-shrink-0">
                   <AvatarFallback className="bg-primary text-primary-foreground">
-                    <Bot className="h-5 w-5" />
+                    <span className="h-5 w-5 flex items-center justify-center text-2xl">👾</span>
                   </AvatarFallback>
                 </Avatar>
                 <div className="rounded-xl px-4 py-3 bg-muted border">

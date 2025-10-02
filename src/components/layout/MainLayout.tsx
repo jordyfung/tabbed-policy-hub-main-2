@@ -29,13 +29,18 @@ import {
   Rss
 } from 'lucide-react';
 
-type Tab = 'dashboard' | 'newsfeed' | 'policies' | 'training' | 'assurance' | 'announcements';
+// Custom emoji icon component to replace Bot icon
+const RobotEmoji = ({ className }: { className?: string }) => (
+  <span className={cn("flex items-center justify-center", className)} style={{ fontSize: '1rem' }}>👾</span>
+);
+
+type Tab = 'dashboard' | 'newsfeed' | 'policies' | 'training' | 'assurance' | 'announcements' | 'admin' | 'profile';
 
 interface SubTab {
   id: string;
   label: string;
   icon: any;
-  color: 'coral' | 'success' | 'info';
+  color: 'primary' | 'success' | 'info';
 }
 
 // Tab visibility configuration - set to false to hide tabs without deleting code
@@ -46,26 +51,31 @@ const tabVisibility: Record<Tab, boolean> = {
   training: true,
   assurance: true,
   announcements: false,
+  admin: true,
+  profile: true,
 };
 
 const tabConfig = {
+  profile: {
+    label: 'nav.profile',
+    icon: User,
+    subTabs: []
+  },
   dashboard: {
     label: 'nav.dashboard',
     icon: LayoutDashboard,
     subTabs: [
-      { id: 'overview', label: 'dashboard.overview', icon: BarChart3, color: 'coral' as const },
+      { id: 'overview', label: 'dashboard.overview', icon: BarChart3, color: 'primary' as const },
       { id: 'standards', label: 'dashboard.standards', icon: Shield, color: 'success' as const },
       { id: 'analytics', label: 'dashboard.analytics', icon: BarChart3, color: 'success' as const },
-      { id: 'reports', label: 'dashboard.reports', icon: FileText, color: 'info' as const },
-      { id: 'permissions', label: 'dashboard.permissions', icon: Settings, color: 'info' as const },
-      { id: 'rag-management', label: 'dashboard.ragManagement', icon: Bot, color: 'info' as const }
+      { id: 'reports', label: 'dashboard.reports', icon: FileText, color: 'info' as const }
     ]
   },
   newsfeed: {
     label: 'nav.newsfeed',
     icon: Rss,
     subTabs: [
-      { id: 'feed', label: 'Feed', icon: Rss, color: 'coral' as const },
+      { id: 'feed', label: 'Feed', icon: Rss, color: 'primary' as const },
       { id: 'chat', label: 'AI Chat', icon: MessageSquare, color: 'info' as const }
     ]
   },
@@ -74,32 +84,38 @@ const tabConfig = {
     icon: Shield,
     subTabs: [
       { id: 'documents', label: 'Documents', icon: FileText, color: 'success' as const },
-      { id: 'ai-assistant', label: 'AI Assistant', icon: Bot, color: 'info' as const }
+      { id: 'ai-assistant', label: 'AI Assistant', icon: RobotEmoji, color: 'info' as const }
     ]
   },
   training: {
     label: 'nav.training',
     icon: GraduationCap,
     subTabs: [
-      { id: 'profile', label: 'Profile', icon: Users, color: 'coral' as const },
+      { id: 'profile', label: 'Profile', icon: Users, color: 'primary' as const },
       { id: 'courses', label: 'Courses', icon: BookOpen, color: 'info' as const },
-      { id: 'team', label: 'Team Management', icon: Users, color: 'coral' as const },
-      { id: 'management', label: 'Management', icon: Settings, color: 'coral' as const },
+      { id: 'team', label: 'Team Management', icon: Users, color: 'primary' as const },
+      { id: 'management', label: 'Management', icon: Settings, color: 'primary' as const },
+      { id: 'course-management', label: 'Course Management', icon: BookOpen, color: 'info' as const },
       { id: 'assignments', label: 'Assignments', icon: Target, color: 'info' as const }
     ]
   },
   assurance: {
     label: 'nav.assurance',
     icon: CheckCircle,
-    subTabs: [
-      { id: 'overview', label: 'dashboard.overview', icon: CheckCircle, color: 'success' as const },
-      { id: 'feedback', label: 'Feedback & Complaints', icon: MessageSquare, color: 'info' as const }
-    ]
+    subTabs: []
   },
   announcements: {
     label: 'nav.announcements',
     icon: Rss,
     subTabs: []
+  },
+  admin: {
+    label: 'nav.admin',
+    icon: Settings,
+    subTabs: [
+      { id: 'permissions', label: 'dashboard.permissions', icon: Shield, color: 'info' as const },
+      { id: 'rag-management', label: 'dashboard.ragManagement', icon: RobotEmoji, color: 'info' as const }
+    ]
   }
 };
 
@@ -149,6 +165,8 @@ export default function MainLayout({
     return !['permissions', 'management', 'assignments', 'team', 'rag-management'].includes(subTab.id);
   });
 
+  const hasSidebar = visibleSubTabs.length > 0;
+
   // Auto-redirect to allowed sub-tab when view mode changes
   useEffect(() => {
     const isCurrentSubTabVisible = visibleSubTabs.some(subTab => subTab.id === currentActiveSubTab);
@@ -165,7 +183,7 @@ export default function MainLayout({
     }
   };
 
-  const getColorClass = (color: 'coral' | 'success' | 'info', isActive: boolean = false) => {
+  const getColorClass = (color: 'primary' | 'success' | 'info', isActive: boolean = false) => {
     if (isActive) {
       return 'bg-primary text-primary-foreground shadow-sm';
     }
@@ -175,7 +193,7 @@ export default function MainLayout({
   return (
     <div className="min-h-screen bg-background">
       {/* Top Navigation */}
-      <header className="border-b border-nav-border bg-nav-background">
+      <header className="sticky top-0 z-10 border-b border-nav-border bg-nav-background">
         <div className="flex h-16 items-center px-6">
           <div className="flex items-center space-x-8">
             <div className="flex items-center space-x-2">
@@ -192,13 +210,44 @@ export default function MainLayout({
                       return false;
                     }
 
-                    // Show only policies, training, and announcements when in staff view mode
-                    if (viewMode === 'staff' && !['policies', 'training', 'announcements'].includes(key)) {
+                    // Super admin only tab
+                    if (key === 'admin' && !isSuperAdmin) {
                       return false;
                     }
+
+    // Show only policies, training, profile, and announcements when in staff view mode
+    if (viewMode === 'staff' && !['policies', 'training', 'profile', 'announcements'].includes(key)) {
+      return false;
+    }
                     return true;
                   });
-                return filteredTabs;
+
+                // Reorder tabs based on view mode
+                let orderedTabs = filteredTabs;
+                
+                if (viewMode === 'staff') {
+                  // Staff view: policies, training, profile (making profile the third tab)
+                  const staffOrder = ['policies', 'training', 'profile'];
+                  orderedTabs = [...filteredTabs].sort(([a], [b]) => {
+                    const aIndex = staffOrder.indexOf(a);
+                    const bIndex = staffOrder.indexOf(b);
+                    if (aIndex === -1) return 1;
+                    if (bIndex === -1) return -1;
+                    return aIndex - bIndex;
+                  });
+                } else {
+                  // Admin view: put profile before admin
+                  const adminOrder = ['dashboard', 'policies', 'training', 'assurance', 'announcements', 'profile', 'admin'];
+                  orderedTabs = [...filteredTabs].sort(([a], [b]) => {
+                    const aIndex = adminOrder.indexOf(a);
+                    const bIndex = adminOrder.indexOf(b);
+                    if (aIndex === -1) return 1;
+                    if (bIndex === -1) return -1;
+                    return aIndex - bIndex;
+                  });
+                }
+                
+                return orderedTabs;
               })().map(([key, config]) => {
                   const isActive = activeTab === key;
                   const Icon = config.icon;
@@ -255,10 +304,10 @@ export default function MainLayout({
         </div>
       </header>
 
-      <div className="flex">
+      <div className="flex overflow-x-hidden">
         {/* Left Sidebar - Hide for training tab since it has no sub-tabs */}
         {visibleSubTabs.length > 0 && (
-          <aside className="w-64 border-r border-border bg-card">
+          <aside className="hidden md:block md:fixed md:top-16 md:left-0 md:bottom-0 md:w-64 md:overflow-y-auto border-r border-border bg-card">
             <div className="p-4">
               <h3 className="text-sm font-semibold text-foreground/60 uppercase tracking-wide mb-3">
                 {t(tabConfig[activeTab].label)}
@@ -290,7 +339,7 @@ export default function MainLayout({
         )}
 
         {/* Main Content */}
-        <main className={cn("flex-1", activeTab === 'policies' ? "p-0" : "p-6")}>
+        <main className={cn("flex-1 pt-16", hasSidebar ? "md:pl-72" : "", activeTab === 'policies' ? "p-0" : "p-6")}>
           {children}
         </main>
       </div>

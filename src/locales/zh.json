@@ -9,6 +9,7 @@
     "training": "培训",
     "assurance": "保障",
     "announcements": "公告",
+    "profile": "个人资料",
     "viewMode": "查看模式",
     "admin": "管理员",
     "staff": "员工"
@@ -180,6 +181,22 @@
       "noAssignments": "未找到培训任务",
       "browseCatalog": "浏览课程目录",
       "noAssignmentsDesc": "您目前没有任何培训任务。请稍后再查看或联系您的经理。"
+    },
+    "catalog": {
+      "title": "课程目录",
+      "subtitle": "浏览和探索可用课程",
+      "searchPlaceholder": "搜索课程...",
+      "filters": {
+        "all": "全部",
+        "manual": "手动"
+      },
+      "actions": {
+        "launch": "启动",
+        "enroll": "注册",
+        "assign": "分配"
+      },
+      "loadMore": "加载更多",
+      "emptyState": "未找到符合您条件的课程"
     }
   },
   "time": {
@@ -189,6 +206,23 @@
     "month_other": "{{count}} 个月",
     "year_one": "{{count}} 年",
     "year_other": "{{count}} 年"
+  },
+  "profile": {
+    "title": "我的个人资料",
+    "subtitle": "查看和管理您的个人信息和培训进度",
+    "personalInfo": "个人信息",
+    "email": "邮箱",
+    "phone": "电话",
+    "memberSince": "加入时间",
+    "department": "部门",
+    "jobTitle": "职位",
+    "editProfile": "编辑资料",
+    "trainingSummary": "培训总结",
+    "coursesCompleted": "课程完成",
+    "recentCompletions": "最近完成",
+    "completedOn": "完成于",
+    "noTrainingHistory": "暂无培训历史",
+    "errorLoading": "加载个人资料信息时出错"
   }
 }
 

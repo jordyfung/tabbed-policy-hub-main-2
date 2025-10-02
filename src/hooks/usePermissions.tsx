@@ -95,8 +95,13 @@ export const PermissionsProvider = ({ children }: PermissionsProviderProps) => {
       return permission?.is_enabled ?? true; // Default to enabled if not found
     }
     
+    // Staff users: disable courses subtab, redirect to profile
+    if (tabId === 'training' && subTabId === 'courses') {
+      return false; // Disable courses subtab for staff
+    }
+    
     // Staff users always see their allowed tabs
-    return ['policies', 'training'].includes(tabId);
+    return ['policies', 'training', 'profile'].includes(tabId);
   };
 
   const toggleSubTabPermission = async (tabId: string, subTabId: string) => {

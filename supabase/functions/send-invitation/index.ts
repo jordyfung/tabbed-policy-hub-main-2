@@ -1,84 +1,81 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
-
-interface InvitationRequest {
-  email: string
-  role: string
-  invitationId: string
-  inviterName: string
-}
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
+};
 
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
 
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
   }
 
   try {
     // Parse request body
-    const { email, role, invitationId, inviterName }: InvitationRequest = await req.json()
-
+    const { firstName, lastName, email, role, invitationId, inviterName } = await req.json();
+    
     if (!email || !role || !invitationId) {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), {
         status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
     }
 
     // Get environment variables
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    
+    if (!resendApiKey) {
+      console.error('RESEND_API_KEY not configured');
+      return new Response(JSON.stringify({ error: 'Email service not configured' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Get invitation details
     const { data: invitation, error: inviteError } = await supabase
       .from('user_invitations')
       .select('*')
       .eq('id', invitationId)
-      .single()
+      .single();
 
     if (inviteError || !invitation) {
-      console.error('Failed to fetch invitation:', inviteError)
+      console.error('Failed to fetch invitation:', inviteError);
       return new Response(JSON.stringify({ error: 'Invalid invitation' }), {
         status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
     }
 
-    // Generate invitation URL (adjust based on your frontend URL)
-    const invitationUrl = `${Deno.env.get('FRONTEND_URL') || 'http://localhost:5173'}/accept-invitation?token=${invitation.invitation_token}`
+    // Generate invitation URL
+    const invitationUrl = `${Deno.env.get('FRONTEND_URL') || 'http://localhost:5173'}/accept-invitation?token=${invitation.invitation_token}`;
 
-    // Send email using Resend API
-    const resendApiKey = Deno.env.get('RESEND_API_KEY')
-    if (!resendApiKey) {
-      console.error('RESEND_API_KEY not configured')
-      return new Response(JSON.stringify({ error: 'Email service not configured' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
+    // Create personalized greeting
+    const greeting = firstName ? `Hi ${firstName},` : 'Hi there,';
+    const fullName = firstName && lastName ? `${firstName} ${lastName}` : email;
 
+    // Email HTML template
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2>Welcome to the Team!</h2>
-        <p>Hi there,</p>
-        <p>${inviterName} has invited you to join the team as a <strong>${role}</strong>.</p>
+        <h2 style="color: #2563eb;">Welcome to the Team!</h2>
+        <p>${greeting}</p>
+        <p>${inviterName || 'Your administrator'} has invited you to join the team as a <strong>${role}</strong>.</p>
         <p>Click the button below to accept your invitation and get started:</p>
         <div style="text-align: center; margin: 30px 0;">
           <a href="${invitationUrl}"
-             style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+             style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
             Accept Invitation
           </a>
         </div>
@@ -90,48 +87,56 @@ Deno.serve(async (req) => {
           <a href="${invitationUrl}">${invitationUrl}</a>
         </p>
       </div>
-    `
+    `;
+
+    console.log('Sending email to:', email);
+    console.log('Using from address: onboarding@resend.dev (Resend test domain)');
 
     const emailResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${resendApiKey}`,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'noreply@yourdomain.com', // Replace with your verified domain
+        from: 'onboarding@resend.dev', // Use Resend's test domain
         to: [email],
         subject: `You're invited to join the team as ${role}`,
-        html: emailHtml,
-      }),
-    })
-
-    if (!emailResponse.ok) {
-      const errorText = await emailResponse.text()
-      console.error('Failed to send email:', errorText)
-      return new Response(JSON.stringify({ error: 'Failed to send email' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        html: emailHtml
       })
+    });
+
+    const emailData = await emailResponse.json();
+    
+    if (!emailResponse.ok) {
+      console.error('Failed to send email:', emailData);
+      return new Response(JSON.stringify({ 
+        error: 'Failed to send email',
+        details: emailData
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
     }
 
-    console.log(`Invitation email sent successfully to ${email}`)
-
+    console.log(`Invitation email sent successfully to ${email}. Message ID: ${emailData.id}`);
+    
     return new Response(JSON.stringify({
       success: true,
-      message: 'Invitation sent successfully'
+      message: 'Invitation sent successfully',
+      emailId: emailData.id
     }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
 
   } catch (error) {
-    console.error('Error in send-invitation function:', error)
+    console.error('Error in send-invitation function:', error);
     return new Response(JSON.stringify({
       error: 'Internal server error',
       details: error.message
     }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
   }
-})
+});

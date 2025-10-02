@@ -300,7 +300,7 @@ export default function StaffProfileContent() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <Card className="p-6 transition-all hover:shadow-sm animate-in fade-in-0 zoom-in-95 duration-300">
               <div className="flex items-center space-x-3 mb-4">
-                <div className="p-2 rounded-lg bg-coral/10 text-coral">
+                <div className="p-2 rounded-lg bg-primary/10 text-primary">
                   <User className="h-5 w-5" />
                 </div>
                 <div>
@@ -381,7 +381,7 @@ export default function StaffProfileContent() {
                 <TooltipTrigger asChild>
                   <Card className="p-6 transition-all hover:shadow-sm animate-in fade-in-0 zoom-in-95 duration-300 delay-200 cursor-default">
                     <div className="flex items-center space-x-3 mb-2">
-                      <Trophy className="h-5 w-5 text-coral" />
+                      <Trophy className="h-5 w-5 text-primary" />
                       <span className="text-sm font-medium text-foreground/60">{t('trainingProfile.totalXP')}</span>
                     </div>
                     <p className="text-2xl font-bold text-foreground">{getTotalXP()}</p>

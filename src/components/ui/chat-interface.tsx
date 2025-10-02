@@ -120,7 +120,7 @@ export default function ChatInterface() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-lg bg-primary/10">
-              <Bot className="h-5 w-5 text-primary" />
+              <span className="h-5 w-5 flex items-center justify-center text-2xl">👾</span>
             </div>
             <div>
               <h2 className="text-lg font-semibold text-foreground">AI Compliance Assistant</h2>
@@ -183,7 +183,7 @@ export default function ChatInterface() {
                 {message.sender === 'user' ? (
                   <User className="h-4 w-4 text-primary" />
                 ) : (
-                  <Bot className="h-4 w-4 text-foreground/70" />
+                  <span className="h-4 w-4 flex items-center justify-center text-lg">👾</span>
                 )}
               </div>
               
@@ -259,7 +259,7 @@ export default function ChatInterface() {
           <div className="flex justify-start">
             <div className="flex items-start space-x-3 max-w-[80%]">
               <div className="p-2 rounded-lg bg-muted">
-                <Bot className="h-4 w-4 text-foreground/70" />
+                <span className="h-4 w-4 flex items-center justify-center text-lg">👾</span>
               </div>
               <Card className="p-4 bg-card">
                 <div className="flex space-x-1">

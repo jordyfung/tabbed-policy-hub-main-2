@@ -35,7 +35,7 @@ export default function EnhancedTrainingContent() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {[
             { title: 'Total Courses', value: '24', icon: BookOpen, color: 'info' },
-            { title: 'Active Assignments', value: '156', icon: Target, color: 'coral' },
+            { title: 'Active Assignments', value: '156', icon: Target, color: 'primary' },
             { title: 'Completion Rate', value: '89%', icon: Award, color: 'success' },
             { title: 'Overdue Training', value: '12', icon: AlertTriangle, color: 'warning' }
           ].map((stat, index) => {

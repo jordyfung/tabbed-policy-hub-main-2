@@ -243,7 +243,7 @@ export default function CoursesContent() {
 
         <Card className="p-6">
           <div className="flex items-center space-x-3 mb-4">
-            <div className="p-2 rounded-lg bg-coral/10 text-coral">
+            <div className="p-2 rounded-lg bg-primary/10 text-primary">
               <Users className="h-5 w-5" />
             </div>
             <h3 className="font-semibold text-foreground">Staff Development</h3>

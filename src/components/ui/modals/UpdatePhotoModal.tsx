@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { Upload, Camera, RotateCcw, Check } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -9,9 +10,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 interface UpdatePhotoModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSaved?: () => void;
 }
 
-export default function UpdatePhotoModal({ open, onOpenChange }: UpdatePhotoModalProps) {
+export default function UpdatePhotoModal({ open, onOpenChange, onSaved }: UpdatePhotoModalProps) {
   const { profile } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -134,20 +136,60 @@ export default function UpdatePhotoModal({ open, onOpenChange }: UpdatePhotoModa
   };
 
   const handleUpload = async () => {
-    if (!croppedImageUrl || !profile) return;
+    if (!croppedImageUrl || !profile || !canvasRef.current) return;
 
     setLoading(true);
     try {
-      // For now, we'll just show a success message
-      // In a real implementation, you would upload the cropped image to Supabase Storage
+      // Convert canvas to blob
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvasRef.current?.toBlob(
+          (blob) => {
+            if (blob) resolve(blob);
+            else reject(new Error('Failed to create blob'));
+          },
+          'image/jpeg',
+          0.9
+        );
+      });
+
+      // Create unique filename with user_id folder structure
+      const timestamp = Date.now();
+      const fileName = `${timestamp}.jpg`;
+      const filePath = `${profile.user_id}/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('profile-photos')
+        .upload(filePath, blob, {
+          contentType: 'image/jpeg',
+          upsert: true
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('profile-photos')
+        .getPublicUrl(filePath);
+
+      // Update profile with photo URL
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ photo_url: publicUrl })
+        .eq('user_id', profile.user_id);
+
+      if (updateError) throw updateError;
+
       toast({
         title: "Photo updated",
         description: "Your profile photo has been updated successfully.",
       });
       
+      onSaved?.();
       handleReset();
       onOpenChange(false);
     } catch (error) {
+      console.error('Upload error:', error);
       toast({
         title: "Error",
         description: "Failed to update photo. Please try again.",
@@ -168,6 +210,11 @@ export default function UpdatePhotoModal({ open, onOpenChange }: UpdatePhotoModa
   };
 
   const initials = profile ? `${profile.first_name?.[0] || ''}${profile.last_name?.[0] || ''}`.toUpperCase() : '';
+  
+  const getPhotoUrl = (url?: string | null) => {
+    if (!url) return '';
+    return `${url}?t=${Date.now()}`;
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -183,7 +230,7 @@ export default function UpdatePhotoModal({ open, onOpenChange }: UpdatePhotoModa
           {!previewUrl ? (
             <div className="flex flex-col items-center space-y-4">
               <Avatar className="h-24 w-24">
-                <AvatarImage src="" alt="Profile preview" />
+                <AvatarImage src={getPhotoUrl(profile?.photo_url)} alt="Profile preview" />
                 <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
                   {initials}
                 </AvatarFallback>
@@ -197,7 +244,7 @@ export default function UpdatePhotoModal({ open, onOpenChange }: UpdatePhotoModa
             <div className="space-y-4">
               <div className="relative">
                 <div 
-                  className="relative mx-auto w-80 h-60 border-2 border-dashed border-muted-foreground/20 overflow-hidden rounded-lg"
+                  className="relative mx-auto w-80 aspect-square border-2 border-dashed border-muted-foreground/20 overflow-hidden rounded-lg"
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
                   onMouseLeave={handleMouseUp}

@@ -19,6 +19,11 @@ export default function UserProfileDropdown() {
   if (!profile) return null;
 
   const initials = `${profile.first_name?.[0] || ''}${profile.last_name?.[0] || ''}`.toUpperCase();
+  
+  const getPhotoUrl = (url?: string | null) => {
+    if (!url) return '';
+    return `${url}?t=${Date.now()}`;
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -42,7 +47,7 @@ export default function UserProfileDropdown() {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
             <Avatar className="h-10 w-10">
-              <AvatarImage src="" alt={`${profile.first_name} ${profile.last_name}`} />
+              <AvatarImage src={getPhotoUrl(profile.photo_url)} alt={`${profile.first_name} ${profile.last_name}`} />
               <AvatarFallback className="bg-primary text-primary-foreground">
                 {initials}
               </AvatarFallback>
@@ -52,7 +57,7 @@ export default function UserProfileDropdown() {
         <DropdownMenuContent className="w-64" align="end" forceMount>
           <div className="flex items-center space-x-3 p-4">
             <Avatar className="h-12 w-12">
-              <AvatarImage src="" alt={`${profile.first_name} ${profile.last_name}`} />
+              <AvatarImage src={getPhotoUrl(profile.photo_url)} alt={`${profile.first_name} ${profile.last_name}`} />
               <AvatarFallback className="bg-primary text-primary-foreground text-lg">
                 {initials}
               </AvatarFallback>
