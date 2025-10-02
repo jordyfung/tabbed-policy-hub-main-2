@@ -3,10 +3,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import UserInvitations from '@/components/admin/UserInvitations';
-import { 
-  UserPlus, 
-  Search, 
-  Filter, 
+import {
+  UserPlus,
+  Search,
+  Filter,
   MoreHorizontal,
   ArrowUpDown
 } from 'lucide-react';
@@ -105,7 +105,7 @@ const teamMembers = [
 ];
 
 
-export default function TeamContent() {
+export default function TeamManagementContent() {
   return (
     <Tabs defaultValue="overview" className="space-y-6">
       <div className="flex items-center justify-between">

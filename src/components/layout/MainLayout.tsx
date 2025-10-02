@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { usePermissions } from '@/hooks/usePermissions';
@@ -57,7 +57,6 @@ const tabConfig = {
       { id: 'standards', label: 'dashboard.standards', icon: Shield, color: 'success' as const },
       { id: 'analytics', label: 'dashboard.analytics', icon: BarChart3, color: 'success' as const },
       { id: 'reports', label: 'dashboard.reports', icon: FileText, color: 'info' as const },
-      { id: 'team', label: 'dashboard.team', icon: Users, color: 'coral' as const },
       { id: 'permissions', label: 'dashboard.permissions', icon: Settings, color: 'info' as const },
       { id: 'rag-management', label: 'dashboard.ragManagement', icon: Bot, color: 'info' as const }
     ]
@@ -84,6 +83,7 @@ const tabConfig = {
     subTabs: [
       { id: 'profile', label: 'Profile', icon: Users, color: 'coral' as const },
       { id: 'courses', label: 'Courses', icon: BookOpen, color: 'info' as const },
+      { id: 'team', label: 'Team Management', icon: Users, color: 'coral' as const },
       { id: 'management', label: 'Management', icon: Settings, color: 'coral' as const },
       { id: 'assignments', label: 'Assignments', icon: Target, color: 'info' as const }
     ]
@@ -126,31 +126,37 @@ export default function MainLayout({
   const currentActiveSubTab = activeSubTab || internalActiveSubTab;
 
   const visibleSubTabs = activeTab === 'policies' ? [] : tabConfig[activeTab].subTabs.filter((subTab) => {
-    // Super admin sees everything
-    if (isSuperAdmin) return true;
-
-    // Staff view mode has its own set of rules
+    // In staff view, always apply staff rules, regardless of admin status.
     if (viewMode === 'staff') {
-      if (subTab.id === 'permissions') return false; // Never show permissions in staff view
       if (activeTab === 'training') {
-        return subTab.id === 'profile' || subTab.id === 'courses';
+        return ['profile', 'courses'].includes(subTab.id);
       }
-      if (activeTab === 'policies') {
-        return true; // Show all policy sub-tabs in staff view
-      }
-      return true; // Show all other non-admin tabs
+      // Hide settings/permissions in staff view for all tabs.
+      return subTab.id !== 'permissions';
     }
-    
-    // Admin view mode rules
+
+    // If not in staff view, then apply admin rules.
     if (isAdmin) {
-       // Permissions sub-tab only for super admin
-      if (subTab.id === 'permissions' && !isSuperAdmin) return false;
+      // Super admins see everything.
+      if (isSuperAdmin) return true;
+      // Regular admins see everything except permissions sub-tab.
+      if (subTab.id === 'permissions') return false;
+      // All other tabs are controlled by the database permissions.
       return isSubTabEnabled(activeTab, subTab.id);
     }
-    
-    return true; // Default to showing the tab if no other rule applies
+
+    // This case should ideally not be hit for logged-in users, but as a fallback:
+    return !['permissions', 'management', 'assignments', 'team', 'rag-management'].includes(subTab.id);
   });
-  
+
+  // Auto-redirect to allowed sub-tab when view mode changes
+  useEffect(() => {
+    const isCurrentSubTabVisible = visibleSubTabs.some(subTab => subTab.id === currentActiveSubTab);
+    if (!isCurrentSubTabVisible && visibleSubTabs.length > 0) {
+      handleSubTabChange(visibleSubTabs[0].id);
+    }
+  }, [viewMode, activeTab, currentActiveSubTab, visibleSubTabs]);
+
   const handleSubTabChange = (subTab: string) => {
     if (onSubTabChange) {
       onSubTabChange(subTab);
@@ -183,19 +189,15 @@ export default function MainLayout({
                   .filter(([key]) => {
                     // Check tab visibility configuration first
                     if (!tabVisibility[key as Tab]) {
-                      console.log(`Tab ${key} hidden by tabVisibility config`);
                       return false;
                     }
 
                     // Show only policies, training, and announcements when in staff view mode
                     if (viewMode === 'staff' && !['policies', 'training', 'announcements'].includes(key)) {
-                      console.log(`Tab ${key} hidden in staff view mode`);
                       return false;
                     }
-                    console.log(`Tab ${key} is visible`);
                     return true;
                   });
-                console.log('Visible tabs:', filteredTabs.map(([key]) => key));
                 return filteredTabs;
               })().map(([key, config]) => {
                   const isActive = activeTab === key;
@@ -205,10 +207,8 @@ export default function MainLayout({
                     <button
                       key={key}
                        onClick={() => {
-                         console.log(`Tab clicked: ${key}`);
                          onTabChange(key as Tab);
                          if (key !== 'policies' && config.subTabs.length > 0) {
-                          console.log(`Setting first sub-tab: ${config.subTabs[0].id}`);
                           handleSubTabChange(config.subTabs[0].id);
                          }
                        }}
@@ -264,39 +264,10 @@ export default function MainLayout({
                 {t(tabConfig[activeTab].label)}
               </h3>
               <nav className="space-y-1">
-                 {tabConfig[activeTab].subTabs
-                  .filter((subTab) => {
-                    // Super admin sees everything
-                    if (isSuperAdmin) return true;
-                    
-                    // Permissions sub-tab only for super admin
-                    if (subTab.id === 'permissions' && !isSuperAdmin) return false;
-                    
-                    // Regular admin sees based on permissions when in admin view
-                    if (isAdmin && viewMode === 'admin') {
-                      return isSubTabEnabled(activeTab, subTab.id);
-                    }
-                    
-                    // Staff view filtering (applies to staff and admins in staff view)
-                    if (!isAdmin || viewMode === 'staff') {
-                      if (activeTab === 'training') {
-                        // Staff can only see profile and courses in training
-                        return subTab.id === 'profile' || subTab.id === 'courses';
-                      }
-                      if (activeTab === 'policies') {
-                        // Show all policy sub-tabs in staff view
-                        return true;
-                      }
-                      // For other tabs, show all sub-tabs
-                      return true;
-                    }
-                    
-                    return true;
-                  })
-                  .map((subTab) => {
+                 {visibleSubTabs.map((subTab) => {
                     const isActive = currentActiveSubTab === subTab.id;
                     const Icon = subTab.icon;
-                    
+
                     return (
                       <button
                         key={subTab.id}

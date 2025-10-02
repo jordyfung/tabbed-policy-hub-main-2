@@ -4,7 +4,6 @@ import { Card } from '@/components/ui/card';
 import { BarChart3, TrendingUp, Users, FileCheck, Shield, UserCheck, AlertTriangle, Clock } from 'lucide-react';
 import AnalyticsContent from './dashboard/AnalyticsContent';
 import ReportsContent from './dashboard/ReportsContent';
-import TeamContent from './dashboard/TeamContent';
 import QualityStandardsContent from './dashboard/QualityStandardsContent';
 import PermissionsContent from './dashboard/PermissionsContent';
 import RagManagementContent from './dashboard/RagManagementContent';
@@ -19,13 +18,9 @@ export default function DashboardContent({ activeSubTab = 'overview' }: Dashboar
   if (activeSubTab === 'analytics') {
     return <AnalyticsContent />;
   }
-  
+
   if (activeSubTab === 'reports') {
     return <ReportsContent />;
-  }
-  
-  if (activeSubTab === 'team') {
-    return <TeamContent />;
   }
 
   if (activeSubTab === 'standards') {

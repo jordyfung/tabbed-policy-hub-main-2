@@ -8,7 +8,7 @@ export default function PoliciesContent() {
   return (
     <div className="relative w-full" style={{ height: 'calc(100vh - 64px)' }}>
       <iframe
-        src="https://cyber-mosquito-7ab.notion.site/ebd/21c0332ab27a804d8a58f96e177bce74?v=2690332ab27a8017aab2000c717949cd"
+        src="https://cyber-mosquito-7ab.notion.site/ebd/21c0332ab27a804d8a58f96e177bce74?v=2690332ab27a8017aab2000c717949cd&pvs=4"
         width="100%"
         height="100%"
         frameBorder="0"

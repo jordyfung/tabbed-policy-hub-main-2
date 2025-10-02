@@ -117,6 +117,71 @@
       "viewDetails": "Opening details (demo)"
     }
   },
+  "trainingRedesign": {
+    "header": {
+      "switchLearner": "Switch Learner",
+      "viewingAs": "Viewing as"
+    },
+    "primaryCta": {
+      "continueTraining": "Continue Training",
+      "startTraining": "Start Training",
+      "resumeCourse": "Resume {{courseName}}",
+      "startCourse": "Start {{courseName}}",
+      "noAssignments": "No assignments available"
+    },
+    "compliance": {
+      "mandatoryCoverage": "Mandatory Coverage",
+      "overdueCount": "Overdue",
+      "dueSoonCount": "Due Soon",
+      "coveragePercent": "{{percent}}%",
+      "countItems": "{{count}} items"
+    },
+    "nextUp": {
+      "title": "Next Up",
+      "dueDate": "Due {{date}}",
+      "estimatedTime": "~{{minutes}} min",
+      "standards": "Standards: {{standards}}"
+    },
+    "assignments": {
+      "overdue": "Overdue",
+      "dueSoon": "Due Soon",
+      "inProgress": "In Progress",
+      "notStarted": "Not Started",
+      "emptyStates": {
+        "overdue": "No overdue assignments",
+        "dueSoon": "No assignments due soon",
+        "inProgress": "No courses in progress",
+        "notStarted": "No pending assignments"
+      }
+    },
+    "actions": {
+      "resume": "Resume",
+      "start": "Start",
+      "viewDetails": "View Details",
+      "viewSyllabus": "View Syllabus",
+      "reportIssue": "Report Issue",
+      "markDone": "Mark as Done",
+      "confirmMarkDone": "Are you sure you want to mark this as completed?",
+      "confirmMarkDoneTitle": "Mark as Complete"
+    },
+    "history": {
+      "title": "Training History",
+      "completed": "Completed",
+      "certificates": "Certificates",
+      "scores": "Scores",
+      "searchPlaceholder": "Search history...",
+      "emptyState": "No training history found"
+    },
+    "recommendations": {
+      "title": "Recommended Courses",
+      "emptyState": "No recommendations available"
+    },
+    "emptyStates": {
+      "noAssignments": "No training assignments found",
+      "browseCatalog": "Browse Course Catalog",
+      "noAssignmentsDesc": "You don't have any training assignments yet. Check back later or contact your manager."
+    }
+  },
   "time": {
     "day_one": "{{count}} day",
     "day_other": "{{count}} days",

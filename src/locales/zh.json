@@ -117,6 +117,71 @@
       "viewDetails": "正在打开详情（演示）"
     }
   },
+  "trainingRedesign": {
+    "header": {
+      "switchLearner": "切换学员",
+      "viewingAs": "正在查看"
+    },
+    "primaryCta": {
+      "continueTraining": "继续培训",
+      "startTraining": "开始培训",
+      "resumeCourse": "继续 {{courseName}}",
+      "startCourse": "开始 {{courseName}}",
+      "noAssignments": "暂无任务"
+    },
+    "compliance": {
+      "mandatoryCoverage": "必修覆盖率",
+      "overdueCount": "逾期",
+      "dueSoonCount": "即将到期",
+      "coveragePercent": "{{percent}}%",
+      "countItems": "{{count}} 项"
+    },
+    "nextUp": {
+      "title": "下一步",
+      "dueDate": "到期 {{date}}",
+      "estimatedTime": "约{{minutes}}分钟",
+      "standards": "标准：{{standards}}"
+    },
+    "assignments": {
+      "overdue": "逾期",
+      "dueSoon": "即将到期",
+      "inProgress": "进行中",
+      "notStarted": "未开始",
+      "emptyStates": {
+        "overdue": "无逾期任务",
+        "dueSoon": "无即将到期任务",
+        "inProgress": "无进行中课程",
+        "notStarted": "无待开始任务"
+      }
+    },
+    "actions": {
+      "resume": "继续",
+      "start": "开始",
+      "viewDetails": "查看详情",
+      "viewSyllabus": "查看大纲",
+      "reportIssue": "报告问题",
+      "markDone": "标记完成",
+      "confirmMarkDone": "您确定要将此标记为已完成吗？",
+      "confirmMarkDoneTitle": "标记为完成"
+    },
+    "history": {
+      "title": "培训历史",
+      "completed": "已完成",
+      "certificates": "证书",
+      "scores": "分数",
+      "searchPlaceholder": "搜索历史...",
+      "emptyState": "未找到培训历史"
+    },
+    "recommendations": {
+      "title": "推荐课程",
+      "emptyState": "暂无推荐"
+    },
+    "emptyStates": {
+      "noAssignments": "未找到培训任务",
+      "browseCatalog": "浏览课程目录",
+      "noAssignmentsDesc": "您目前没有任何培训任务。请稍后再查看或联系您的经理。"
+    }
+  },
   "time": {
     "day_one": "{{count}} 天",
     "day_other": "{{count}} 天",

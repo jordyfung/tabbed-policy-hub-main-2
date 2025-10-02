@@ -1041,3 +1041,33 @@ export const Constants = {
     },
   },
 } as const
+
+// Training Profile Redesign Types
+export type AssignmentStatus = 'not_started' | 'in_progress' | 'completed' | 'overdue';
+
+export type Assignment = {
+  id: string;
+  title: string;
+  dueDate?: string; // ISO
+  isMandatory: boolean;
+  progressPercent: number; // 0..100
+  lastLaunchedAt?: string; // ISO
+  estimatedMinutes?: number;
+  status: AssignmentStatus;
+  courseId: string;
+  standards?: string[];
+};
+
+export type AssignmentGroup = {
+  title: string;
+  assignments: Assignment[];
+  emptyMessage: string;
+};
+
+export type ComplianceSummary = {
+  mandatoryCoverage: number; // percentage
+  overdueCount: number;
+  dueSoonCount: number;
+};
+
+export type NextUpAssignment = Assignment | null;
