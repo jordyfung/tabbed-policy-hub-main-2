@@ -1,11 +1,5 @@
 import OpenAI from 'openai';
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true // Note: In production, this should be handled server-side
-});
-
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
@@ -41,10 +35,27 @@ export const CONVERSATION_STARTERS = [
 
 export class AIService {
   private static instance: AIService;
-  private openai: OpenAI;
+  private openai: OpenAI | null = null;
+  private isConfigured: boolean = false;
 
   constructor() {
-    this.openai = openai;
+    // Lazy initialization - only create OpenAI client when API key is available
+    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+    if (apiKey && apiKey !== 'your_openai_api_key_here') {
+      try {
+        this.openai = new OpenAI({
+          apiKey,
+          dangerouslyAllowBrowser: true // Note: In production, this should be handled server-side
+        });
+        this.isConfigured = true;
+      } catch (error) {
+        console.warn('Failed to initialize OpenAI client:', error);
+        this.isConfigured = false;
+      }
+    } else {
+      console.warn('OpenAI API key not configured. AI features will be disabled.');
+      this.isConfigured = false;
+    }
   }
 
   public static getInstance(): AIService {
@@ -58,6 +69,10 @@ export class AIService {
    * Get AI response for a chat message
    */
   async getChatResponse(messages: ChatMessage[]): Promise<string> {
+    if (!this.isConfigured || !this.openai) {
+      return 'AI features are currently disabled. Please contact your administrator to enable OpenAI integration.';
+    }
+
     try {
       // Add system prompt if this is the first message
       const chatMessages = messages.length === 1 && messages[0].role === 'user' 
@@ -82,6 +97,10 @@ export class AIService {
    * Summarize the conversation into a work profile, merging with existing summary if available
    */
   async summarizeConversation(messages: ChatMessage[], existingSummary?: string): Promise<string> {
+    if (!this.isConfigured || !this.openai) {
+      return 'Unable to generate summary. AI features are currently disabled.';
+    }
+
     try {
       const conversationText = messages
         .filter(msg => msg.role !== 'system')
